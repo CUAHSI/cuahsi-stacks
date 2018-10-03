@@ -15,7 +15,10 @@ scalarExfiltration        | 1
 scalarSurfaceRunoff       | 1    
 scalarSurfaceTemp         | 1  
 scalarSenHeatTotal        | 1 
-scalarLatHeatTotal        | 1   
+scalarLatHeatTotal        | 1 
+scalarCanopyTranspiration | 1
+scalarCanopyEvaporation   | 1
+scalarGroundEvaporation   | 1
 iLayerHeight              | 1   
 iLayerLiqFluxSoil         | 1   
 mLayerTemp                | 1   

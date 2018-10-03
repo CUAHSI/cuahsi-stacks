@@ -116,7 +116,7 @@ if __name__ == "__main__":
 "\n# Email:  acastronova.cuahsi.org"
 "\n# Date:   9.17.2017"
 "\n# Org:    CUAHSI"
-"\n# Desc:   Entrypoint for executing the summa model"
+"\n# Desc:   Entrypoint for executing the summa model that follows the SPECS pattern"
 "\n####################################"
 )
     parser.add_argument('-d', action='store_true',

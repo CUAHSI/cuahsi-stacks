@@ -4,7 +4,7 @@
 docker run --rm -ti \
 -v $(pwd):/tmp/summa \
 -e LOCALBASEDIR=test01 \
--e MASTERPATH=test01/settings/celia1990/summa_fileManager_celia1990.txt \
-cuahsi/summa:sopron -x
+-e MASTERPATH=test01/settings/summa_fileManager_riparianAspenSimpleResistance.txt \
+cuahsi/summa:sopron -x 
 
 #--entrypoint /bin/bash \

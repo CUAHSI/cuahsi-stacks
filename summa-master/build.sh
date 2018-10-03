@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-docker build -t specs/summa .
+docker build -t cuahsi/summa:master .
