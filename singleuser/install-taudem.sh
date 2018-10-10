@@ -3,7 +3,7 @@ set -x
 set -e
 
 apt update \
-  && buildDeps='libmpich-dev' \
+  && buildDeps='git libmpich-dev' \
   && apt install -y --no-install-recommends $buildDeps \
   && git clone --branch Develop https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
   && cd /tmp/TauDEM \

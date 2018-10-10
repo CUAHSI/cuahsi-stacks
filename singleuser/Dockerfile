@@ -1,10 +1,14 @@
 FROM nlknguyen/alpine-mpich:latest as mpi
 FROM dicehub/dakota:latest as dakota
-#FROM mjstealey/docker-irods-icommands as irods
 FROM cuahsi/modflow:6.0.2 as modflow
+
+FROM cuahsi/taudem:5.3.7 as taudem
+WORKDIR /tmp
+RUN ldd /usr/local/bin/pitremove | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
+RUN rm -rf /tmp/deps/lib64
+
 #jupyter/r-notebook/
 FROM jupyter/scipy-notebook:1145fb1198b2
-
 
 
 
@@ -46,6 +50,11 @@ COPY --from=mpi /usr/local/bin/mpi* /usr/local/bin/
 COPY --from=mpi /usr/local/include/mpi* /usr/local/include/
 COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
 
+ENV LD_LIBRARY_PATH="/usr/local/lib/taudem:$LD_LIBRARY_PATH"
+RUN mkdir /usr/local/lib/taudem
+COPY --from=taudem /usr/local/bin/* /usr/local/bin/
+COPY --from=taudem /tmp/deps/usr/lib/* /usr/local/lib/taudem/
+COPY --from=taudem /tmp/deps/lib/x86_64-linux-gnu/* /usr/lib/x86_64-linux-gnu/
 
 #ADD install-gnu.sh /home/install-gnu.sh
 #RUN sh /home/install-gnu.sh
@@ -53,11 +62,11 @@ COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
 #ADD install-taudem.sh /home/install-taudem.sh
 #RUN sh /home/install-taudem.sh
 
-# Install Modflow
-COPY --from=modflow /usr/local/bin/mf6.0.2 /usr/local/bin/
-COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-linux-gnu/
-#COPY --from=modflow /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
-#COPY --from=modflow /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/
+## Install Modflow
+#COPY --from=modflow /usr/local/bin/mf6.0.2 /usr/local/bin/
+#COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-linux-gnu/
+##COPY --from=modflow /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
+##COPY --from=modflow /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/
 
 
 #RUN mkdir /home/jovyan/dakota
