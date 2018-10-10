@@ -1,7 +1,7 @@
 FROM nlknguyen/alpine-mpich:latest as mpi
 FROM dicehub/dakota:latest as dakota
-FROM mjstealey/docker-irods-icommands as irods
-#mjstealey/docker-modflow/
+#FROM mjstealey/docker-irods-icommands as irods
+FROM cuahsi/modflow:6.0.2 as modflow
 #jupyter/r-notebook/
 FROM jupyter/scipy-notebook:1145fb1198b2
 
@@ -49,9 +49,16 @@ COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
 
 #ADD install-gnu.sh /home/install-gnu.sh
 #RUN sh /home/install-gnu.sh
-#
-ADD install-taudem.sh /home/install-taudem.sh
-RUN sh /home/install-taudem.sh
+
+#ADD install-taudem.sh /home/install-taudem.sh
+#RUN sh /home/install-taudem.sh
+
+# Install Modflow
+COPY --from=modflow /usr/local/bin/mf6.0.2 /usr/local/bin/
+COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-linux-gnu/
+#COPY --from=modflow /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
+#COPY --from=modflow /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/
+
 
 #RUN mkdir /home/jovyan/dakota
 ## determine dependencies via
