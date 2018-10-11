@@ -1,4 +1,7 @@
 FROM nlknguyen/alpine-mpich:latest as mpi
+#WORKDIR /tmp
+#RUN ldd /usr/local/bin/mpiexec | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
+
 FROM dicehub/dakota:latest as dakota
 FROM cuahsi/modflow:6.0.2 as modflow
 
@@ -47,8 +50,15 @@ RUN sh /tmp/install-base.sh
 
 #RUN sh /home/install-mpi.sh
 COPY --from=mpi /usr/local/bin/mpi* /usr/local/bin/
-COPY --from=mpi /usr/local/include/mpi* /usr/local/include/
-COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
+COPY --from=mpi /usr/local/bin/hydra* /usr/local/bin/
+COPY --from=mpi /lib/ld-musl-x86_64.so.1 /lib
+#COPY --from=mpi /usr/local/include/mpi* /usr/local/include/
+#COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
+#COPY --from=mpi /tmp/deps /tmp
+RUN cd /usr/local/bin \
+&& ln -sf mpicxx mpic++ \
+&& ln -sf mpiexec.hydra mpiexec \
+&& ln -sf mpiexec.hydra mpirun
 
 ENV LD_LIBRARY_PATH="/usr/local/lib/taudem:$LD_LIBRARY_PATH"
 RUN mkdir /usr/local/lib/taudem
