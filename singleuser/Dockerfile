@@ -52,9 +52,6 @@ RUN sh /tmp/install-base.sh
 COPY --from=mpi /usr/local/bin/mpi* /usr/local/bin/
 COPY --from=mpi /usr/local/bin/hydra* /usr/local/bin/
 COPY --from=mpi /lib/ld-musl-x86_64.so.1 /lib
-#COPY --from=mpi /usr/local/include/mpi* /usr/local/include/
-#COPY --from=mpi /usr/local/lib/libmpi* /usr/local/lib/
-#COPY --from=mpi /tmp/deps /tmp
 RUN cd /usr/local/bin \
 && ln -sf mpicxx mpic++ \
 && ln -sf mpiexec.hydra mpiexec \
@@ -73,10 +70,8 @@ COPY --from=taudem /tmp/deps/lib/x86_64-linux-gnu/* /usr/lib/x86_64-linux-gnu/
 #RUN sh /home/install-taudem.sh
 
 ## Install Modflow
-#COPY --from=modflow /usr/local/bin/mf6.0.2 /usr/local/bin/
-#COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-linux-gnu/
-##COPY --from=modflow /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
-##COPY --from=modflow /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib/x86_64-linux-gnu/
+COPY --from=modflow /usr/local/bin/mf6.0.2 /usr/local/bin/
+COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-linux-gnu/
 
 
 #RUN mkdir /home/jovyan/dakota
