@@ -3,6 +3,10 @@ FROM nlknguyen/alpine-mpich:latest as mpi
 #RUN ldd /usr/local/bin/mpiexec | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
 
 FROM dicehub/dakota:latest as dakota
+WORKDIR /tmp
+RUN ldd /home/dakota/bin/dakota | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
+RUN rm -rf /tmp/deps/lib64 /tmp/deps/home
+
 FROM cuahsi/modflow:6.0.2 as modflow
 
 FROM cuahsi/taudem:5.3.7 as taudem
@@ -78,16 +82,20 @@ COPY --from=modflow /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/x86_64-l
 ## determine dependencies via
 ## ldd dakota
 ## objdump -p dakota | grep NEEDED
-#FROM dicehub/dakota:latest as dakota
-#RUN cd ~
-#COPY --from=dakota /home/dakota /home/jovyan/dakota
+RUN cd ~
+COPY --from=dakota /home/dakota /tmp/tests/dakota
 #COPY --from=dakota /usr/bin /usr/bin
 #COPY --from=dakota /usr/include /usr/include
 #COPY --from=dakota /usr/lib /usr/lib
-#COPY --from=dakota /home/dakota/bin /usr/bin
-#COPY --from=dakota /home/dakota/lib /usr/lib
-#COPY --from=dakota /home/dakota/include /usr/include
-#COPY --from=dakota /home/dakota/share /usr/share
+COPY --from=dakota /home/dakota/bin /usr/bin
+COPY --from=dakota /home/dakota/lib /usr/lib
+COPY --from=dakota /home/dakota/include /usr/include
+COPY --from=dakota /home/dakota/share /usr/share
+COPY --from=dakota /tmp/deps/usr/lib/* /usr/local/lib/dakota/
+COPY --from=dakota /tmp/deps/lib/x86_64-linux-gnu/* /usr/lib/x86_64-linux-gnu/
+ENV LD_LIBRARY_PATH="/usr/local/lib/dakota:$LD_LIBRARY_PATH"
+
+
 #USER jovyan
 
 #  ADD install-condaenvs.sh /home/install-condaenvs.sh
