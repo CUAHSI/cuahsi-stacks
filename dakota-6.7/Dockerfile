@@ -4,7 +4,7 @@ FROM ubuntu:xenial
 #RUN apt-get install -y --no-install-recommends mpich
 # build mpich from source
 RUN apt-get update \
-&& apt-get install -y git build-essential autoconf libtool \
+&& apt-get install -y git build-essential autoconf libtool gfortran \
 && git clone git://git.mpich.org/mpich.git /tmp/mpich \
 && cd /tmp/mpich \
 && git submodule update --init \
@@ -32,6 +32,7 @@ RUN cd /tmp/dakota/build \
 && cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python -C BuildDakota.cmake /tmp/dakota \
 && make clean
 
+RUN apt-get install -y gfortran
  
 RUN cd /tmp/dakota/build \
 && make  \
