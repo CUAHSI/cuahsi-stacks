@@ -1,4 +1,7 @@
 FROM nlknguyen/alpine-mpich:latest as mpi
+FROM cuahsi/python:3 as python3
+FROM cuahsi/python:2 as python2
+
 #WORKDIR /tmp
 #RUN ldd /usr/local/bin/mpiexec | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
 
@@ -13,6 +16,7 @@ FROM cuahsi/taudem:5.3.7 as taudem
 WORKDIR /tmp
 RUN ldd /usr/local/bin/pitremove | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
 RUN rm -rf /tmp/deps/lib64
+
 
 #jupyter/r-notebook/
 FROM jupyter/scipy-notebook:1145fb1198b2
@@ -50,7 +54,6 @@ WORKDIR $HOME
 USER root
 ADD install-base.sh /tmp/install-base.sh
 RUN sh /tmp/install-base.sh
-
 
 #RUN sh /home/install-mpi.sh
 COPY --from=mpi /usr/local/bin/mpi* /usr/local/bin/
@@ -95,6 +98,11 @@ COPY --from=dakota /tmp/deps/usr/lib/* /usr/local/lib/dakota/
 COPY --from=dakota /tmp/deps/lib/x86_64-linux-gnu/* /usr/lib/x86_64-linux-gnu/
 ENV LD_LIBRARY_PATH="/usr/local/lib/dakota:$LD_LIBRARY_PATH"
 
+# Install python3
+COPY --from=python3 /opt/conda /opt/conda
+
+# Install python3
+COPY --from=python2 /opt/conda/ /opt/conda
 
 #USER jovyan
 

@@ -14,8 +14,9 @@ RUN apt-get update \
 && make -j8 install \
 && rm -rf /tmp/*
 
+
 RUN apt-get update \
-&& buildDeps='wget ca-certificates build-essential gcc g++ python3-dev liblapack-dev cmake libboost-all-dev' \
+&& buildDeps='wget ca-certificates build-essential gcc g++ python3-dev liblapack-dev cmake libboost-all-dev libblas-dev libmotif-dev gsl-bin libgsl0-dev' \
 && apt-get install -y --no-install-recommends $buildDeps 
 
 RUN dakota=dakota-6.7-release-public-src.tar.gz \
@@ -32,8 +33,6 @@ RUN cd /tmp/dakota/build \
 && cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python -C BuildDakota.cmake /tmp/dakota \
 && make clean
 
-RUN apt-get install -y gfortran
- 
 RUN cd /tmp/dakota/build \
 && make  \
 && make install 
