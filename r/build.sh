@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 
-docker build -t cuahsi/r:3.4 .
+docker build -t cuahsi/conda-r:3.4 .
 

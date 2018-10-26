@@ -2,6 +2,7 @@ FROM jupyter/scipy-notebook
 
 
 USER root
+
 RUN conda update conda -y \
 && conda clean --all -y
 
