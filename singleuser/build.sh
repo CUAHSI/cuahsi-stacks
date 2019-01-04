@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-docker build -t cuahsi/singleuser .
+docker build -t cuahsi/singleuser:multi .
