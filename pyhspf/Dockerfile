@@ -23,16 +23,19 @@ RUN pip3 install numpy scipy matplotlib
 
 RUN git clone  https://github.com/djlampert/PyHSPF.git && \
 cd PyHSPF/src && \
-python3 setup.py config --fcompiler=gfortran build --compiler=unix && \\
+python3 setup.py config --fcompiler=gfortran build --compiler=unix && \
 rm setup.cfg && \
-echo "[build_ext]\ncompiler=unix" >> setup.cfg && \
+echo "[build_ext]" > setup.cfg && \
+echo "compiler=unix" >> setup.cfg && \
+cat setup.cfg && \
 python3 setup.py install && \
 mv /tmp/PyHSPF/examples /home
 
 RUN rm -rf /tmp/*
 
-RUN apt-get autoremove -y make gfortran git
+RUN apt-get autoremove -y make git
 
+WORKDIR /home/examples
 ENTRYPOINT ["/bin/bash"]
 
 
