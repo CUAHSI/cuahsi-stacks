@@ -21,6 +21,7 @@ RUN cd /tmp/wrf_hydro_nwm_public/trunk/NDHMS \
 && cp Run/* /home/docker/RUN \ 
 && mkdir /home/docker/RUN/FORCING \
 && mkdir /home/docker/RUN/DOMAIN \
+&& mkdir /home/docker/RUN/OUTPUT \
 && rm -rf /tmp/*
 
 # add custom namelists
@@ -28,7 +29,7 @@ COPY --chown=docker:docker hydro.namelist /home/docker/RUN
 COPY --chown=docker:docker namelist.hrldas /home/docker/RUN
 
 # add code directory
-WORKDIR /home/docker
+WORKDIR /home/docker/RUN
 
 ENTRYPOINT ["/bin/bash"]
 
