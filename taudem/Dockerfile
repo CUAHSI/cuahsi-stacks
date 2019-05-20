@@ -7,8 +7,9 @@ RUN apt-get update \
 
 RUN git clone --branch Develop https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
 && cd /tmp/TauDEM \
-&& git checkout Develop \
-&& git pull
+#&& git checkout Develop \
+&& git checkout tags/v5.3.7 
+    #&& git pull
 #tags/v5.3.8
 
 RUN apt-get install -y libgdal-dev
