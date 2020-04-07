@@ -1,0 +1,125 @@
+ARG BASE_VERSION
+FROM cuahsi/singleuser-base:$BASE_VERSION
+
+USER root
+
+
+
+ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+ENV VERSION=v5.0.3
+
+RUN pip install wrfhydropy
+
+RUN conda install --quiet -y \
+jupyterlab \
+jupyter_contrib_nbextensions \
+boltons \
+cartopy \
+deepdiff \
+f90nml \
+netcdf4 \
+pytest \
+pytest-datadir \
+rasterio \
+termcolor \
+xarray \
+&& conda clean --all -f -y \
+&& rm -rf $CONDA_DIR/share/jupyter/lab/staging \
+&& rm -rf /home/$NB_USER/.cache/yarn \
+&& rm -rf /home/$NB_USER/.node-gyp \
+&& fix-permissions $CONDA_DIR \
+&& fix-permissions /home/$NB_USER
+
+
+RUN apt-get update \
+    && apt-get install -yq --no-install-recommends \
+    wget \
+    bzip2 \
+    ca-certificates \
+    vim \ 
+    libhdf5-dev \
+    gfortran \
+    g++ \
+    valgrind \
+    m4 \
+    make \ 
+    libswitch-perl \
+    git \
+    nano \
+    tcsh \
+    bc \
+    less \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --config csh
+
+
+## Download, build, and install MPICH
+RUN MPICH_VERSION="3.2" \
+    && MPICH_CONFIGURE_OPTIONS="" \
+    && MPICH_MAKE_OPTIONS='-j 2' \
+    && mkdir /tmp/mpich-src \
+    && cd /tmp/mpich-src \
+    && wget http://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz \
+    && tar xfz mpich-${MPICH_VERSION}.tar.gz  \
+    && cd mpich-${MPICH_VERSION}  \
+    && ./configure ${MPICH_CONFIGURE_OPTIONS}  \
+    && make ${MPICH_MAKE_OPTIONS} && make install \
+    && rm -rf /tmp/mpich-src
+
+# install netcdf-C
+ENV H5DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+ENV NCDIR=/usr/local
+RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.1.1.tar.gz -P /tmp \
+&& tar -xf /tmp/netcdf-4.4.1.1.tar.gz -C /tmp \
+&& cd /tmp/netcdf-4.4.1.1 && CPPFLAGS=-I${H5DIR}/include LDFLAGS=-L${H5DIR}/lib ./configure --prefix=/usr/local \
+&& cd /tmp/netcdf-4.4.1.1 \
+&& make \
+&& make install \
+&& rm -rf /tmp/*
+
+# install netcdf-Fortran
+ENV NFDIR=/usr/local
+ENV LD_LIBRARY_PATH=${NCDIR}/lib
+RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.4.4.tar.gz \
+&& tar -xf netcdf-fortran-4.4.4.tar.gz -C /tmp \
+&& cd /tmp/netcdf-fortran-4.4.4/ && CPPFLAGS=-I${NCDIR}/include LDFLAGS=-L${NCDIR}/lib ./configure --prefix=${NFDIR} \
+&& cd /tmp/netcdf-fortran-4.4.4 \
+&& make \
+&& make install \
+&& rm -rf /tmp/*
+
+USER $NB_UID
+
+# get the WRF-Hydro code
+RUN cd /tmp \
+&& git clone https://github.com/NCAR/wrf_hydro_nwm_public.git \
+&& cd wrf_hydro_nwm_public \
+&& git checkout tags/$VERSION
+
+# add a custom build configuration
+ADD setEnvar.sh /tmp/wrf_hydro_nwm_public/trunk/NDHMS
+
+# make a directory for the wrf-hydro binaries
+# and add custom namelists
+RUN mkdir /opt/wrfhydro
+COPY --chown=$NB_UID:users hydro.namelist /opt/wrfhydro
+COPY --chown=$NB_UID:users namelist.hrldas /opt/wrfhydro
+
+ENV NETCDF_INC=/usr/local/include
+ENV NETCDF_LIB=/usr/local/lib
+ENV WRFHYDRO=/opt/wrfhydro
+
+## Build the code
+RUN cd /tmp/wrf_hydro_nwm_public/trunk/NDHMS \
+&& echo 2 | ./configure \
+&& ./compile_offline_NoahMP.sh setEnvar.sh \
+&& cp Run/* /opt/wrfhydro 
+#&& rm -rf /tmp/*
+
+USER root
+RUN rm -rf XDG_CACHE_HOME/* \
+USER $NB_UID
+
+# add code directory
+WORKDIR /home/jovyan

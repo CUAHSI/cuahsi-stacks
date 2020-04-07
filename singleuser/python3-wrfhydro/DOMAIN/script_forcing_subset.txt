@@ -1,0 +1,7 @@
+#!/bin/bash
+OLDFORCPATH='PATH_TO_OLD_FORCING_DATA_FOLDER'
+NEWFORCPATH='PATH_TO_NEW_FORCING_DATA_FOLDER'
+for i in `ls $OLDFORCPATH`; do
+echo ${i##*/}
+ncks -d west_east,2946,2963 -d south_north,1056,1070 ${i} ${NEWFORCPATH}/${i##*/}
+done
