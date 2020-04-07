@@ -34,9 +34,17 @@ ARG PACKAGES='"WaterML","dplyer","rgrass7","dataRetrieval","stringi"'
 RUN /opt/conda/envs/R/bin/Rscript -e "install.packages(c($PACKAGES))" 
 
 # remove all registered kernels
-RUN jupyter kernelspec remove -f $(jupyter kernelspec list | tr -s ' ' | cut -f 2 -d' ' | tail -n +2)
+#RUN jupyter kernelspec remove -f $(jupyter kernelspec list | tr -s ' ' | cut -f 2 -d' ' | tail -n +2)
 
 # install the R kernel
 USER root
 RUN /opt/conda/envs/R/bin/python -m ipykernel install --prefix=/usr --name 'R-3.5.1'
 USER jovyan
+
+RUN pip uninstall -y ipykernel
+
+USER root
+RUN rm -rf /home/jovan/.cache/* \
+&& fix-permissions $CONDA_DIR \
+&& fix-permissions /home/$NB_USER 
+USER $NB_UID

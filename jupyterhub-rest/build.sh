@@ -1,3 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-docker build -t cuahsi/jupyterhub-rest .
+VERSION=$1
+
+docker build -t cuahsi/jupyterhub-rest:$VERSION .

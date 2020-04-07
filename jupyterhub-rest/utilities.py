@@ -49,8 +49,7 @@ def build_userspace(username):
         os.makedirs(path)
 
     file_paths = []
-    print('%s -> copying userpace filse' % username, flush=True)
-    #ipynb_dir = '../jupyter-rest-endpoint/notebooks'
+    print('%s -> copying userspace files' % username, flush=True)
     for root, dirs, files in os.walk(ipynb_dir):
         for file in files:
             file_paths.append(os.path.join(os.path.abspath(root), file))
@@ -61,22 +60,23 @@ def build_userspace(username):
         dirpath = os.path.dirname(dst)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
+            os.chown(dirpath, uid, gid)
+            os.chmod(dirpath, 0o2770)
         shutil.copyfile(src, dst)
+        os.chown(dst, uid, gid)
+        os.chmod(dst, 0o2770)
 
-    # change file ownership so that it can be accessed inside docker container
-    print('%s -> modifying userspace permissions' % username, flush=True)
-    os.chown(basepath, uid, gid)
-    os.chown(os.path.dirname(basepath), uid, gid)
-#    os.chmod(os.path.dirname(basepath), stat.S_IRWXG | stat.S_ISGID | stat.S_IRWXU)
-    os.chmod(os.path.dirname(basepath), 0o2770)
-
-    for root, dirs, files in os.walk(basepath):
-        for d in dirs:
-            os.chown(os.path.join(root, d), uid, gid)
-#            os.chmod(os.path.join(root, d), stat.S_IRWXG | stat.S_ISGID | stat.S_IRWXU)
-            os.chmod(os.path.join(root, d), 0o2770)
-
-        for f in files:
-            os.chown(os.path.join(root, f), uid, gid)
-#            os.chmod(os.path.join(root, f), stat.S_IRWXG | stat.S_ISGID | stat.S_IRWXU)
-            os.chmod(os.path.join(root, f), 0o2770)
+#    # change file ownership so that it can be accessed inside docker container
+#    print('%s -> modifying userspace permissions' % username, flush=True)
+#    os.chown(basepath, uid, gid)
+#    os.chown(os.path.dirname(basepath), uid, gid)
+#    os.chmod(os.path.dirname(basepath), 0o2770)
+#
+#    for root, dirs, files in os.walk(basepath):
+#        for d in dirs:
+#            os.chown(os.path.join(root, d), uid, gid)
+#            os.chmod(os.path.join(root, d), 0o2770)
+#
+#        for f in files:
+#            os.chown(os.path.join(root, f), uid, gid)
+#            os.chmod(os.path.join(root, f), 0o2770)

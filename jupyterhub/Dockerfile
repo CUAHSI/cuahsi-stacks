@@ -5,8 +5,10 @@ MAINTAINER Tony Castronova <acastronova@cuahsi.org>
 ENV PATH=/opt/conda/bin:$PATH
 
 RUN apt-get update \
-&& apt-get install --fix-missing -y --no-install-recommends wget git \
-&& /opt/conda/bin/conda install -yq psycopg2=2.7 \
+&& apt-get install --fix-missing -y --no-install-recommends wget git
+
+RUN /opt/conda/bin/conda update conda \
+&& /opt/conda/bin/conda install -yq psycopg2=2.7 tornado=5 \
 && /opt/conda/bin/conda clean -tipsy 
 
 RUN cd /srv \

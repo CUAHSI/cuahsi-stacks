@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-docker build -t cuahsi/jupyterhub:1.4.0 .
+VERSION=$1
+
+docker build -t cuahsi/jupyterhub:$VERSION .

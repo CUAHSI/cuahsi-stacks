@@ -17,7 +17,7 @@ ADD setEnvar.sh /tmp/wrf_hydro_nwm_public/trunk/NDHMS
 RUN cd /tmp/wrf_hydro_nwm_public/trunk/NDHMS \
 && echo 2 | ./configure \
 && ./compile_offline_NoahMP.sh setEnvar.sh \
-&& mkdir /home/docker/RUN \
+&& mkdir /home/docker/RUN 
 && cp Run/* /home/docker/RUN \ 
 && mkdir /home/docker/RUN/FORCING \
 && mkdir /home/docker/RUN/DOMAIN \
