@@ -25,19 +25,18 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key a
 && apt-get update \
 && apt-get install -y irods-icommands
 
-# install TauDEM
-ARG TAG=v5.3.7
-RUN git clone --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
-&& cd /tmp/TauDEM/src \
-&& sed -i 's#\.\.#/usr/local/bin#g' makefile \
-&& make \
-&& rm -rf /tmp/*
+## install TauDEM
+#ARG TAG=v5.3.7
+#RUN git clone --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
+#&& cd /tmp/TauDEM/src \
+#&& sed -i 's#\.\.#/usr/local/bin#g' makefile \
+#&& make \
+#&& rm -rf /tmp/*
 
 # install nbfetch
-RUN pip install hs_restclient \
+RUN pip install hs_restclient hstools \
 && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
 && jupyter serverextension enable --py nbfetch --sys-prefix
-
 USER jovyan
 
 RUN rm -rf ~/work
