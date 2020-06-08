@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+
+  ########
+  # Base #
+  ########
+  jupyterhub-base:
+    env_file:
+      - '.env'
+    build: 
+      context: ./base
+      dockerfile: Dockerfile.base
+      args:
+        # JupyterHub/singleuser version to use as base
+        BASE_VERSION: ${JH_BASE}
+      labels:
+        description: |
+          Base JupyterHub image from which all other CUAHSI singleuser environments are created. Built using jupyterhub/singleuser:${JH_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-base:${CUAHSI_BASE}
+
+  ##############
+  # Scientific #
+  ##############
+  scientific:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-scientific
+      dockerfile: Dockerfile
+      args:
+        # cuahsi/singleuser version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          CUAHSI JupyterHub singleuser environment configured with scientific libraries. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-scientific-py3:${CUAHSI_BASE}
+
+  ################################
+  # 2018 Near Surface Geophysics #
+  ################################
+  geophysics:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-wine
+      dockerfile: Dockerfile.wine
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          CUAHSI JupyterHub singleuser environment configured for the 2019 Near Surface Geophysics Workshop. This image uses WINE to run R2, gmsh,and pyres. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-geophysics:${CUAHSI_BASE}
+
+
+  ####################
+  # WRF-Hydro v5.0.3 #
+  ####################
+  wrfhydro:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-wrfhydro
+      dockerfile: Dockerfile.wrfhydro
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          Environment configured for WRF-Hydro v5.0.3. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-wrfhydro-py3:v5.0.3-${CUAHSI_BASE}
+

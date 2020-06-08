@@ -3,10 +3,10 @@
 if [ $# -ne 4 ]; then
     echo "Incorrect number of arguments supplied"
     echo "Usage:"
-    echo "build_image [path to Dockerfile] [base image version] [tag] [version]"
+    echo "build_image [path to Dockerfile] [base image name] [tag] [version]"
     echo "e.g."
-    echo "build_image r/Dockerfile.r latest r3.5.1 latest"
-    echo "-> cuahsi/singleuser-r3.5.1:latest"
+    echo "build_image base/Dockerfile.base latest base 2020.06.08"
+    echo "-> cuahsi/singleuser-base:2020.06.08"
     exit 1
 fi
 
@@ -14,6 +14,15 @@ dpath=$1
 vbase=$2
 tag=$3
 version=$4
+
+if [ ! -z $5 ]
+then
+    cache=$5
+else
+    cache=''
+fi
+
+
 
 echo Dockerfile: $dpath 
 echo Base Version: $vbase
@@ -35,6 +44,6 @@ builddir=$(dirname $dpath)
 dockerfile=$(basename $dpath)
 currdir=$(pwd)
 cd $builddir \
-&& docker build --build-arg BASE_VERSION=$vbase -f $dockerfile -t cuahsi/singleuser-$tag:$version . \
+&& docker build $cache --build-arg BASE_VERSION=$vbase -f $dockerfile -t cuahsi/singleuser-$tag:$version . \
 && cd $currdir
 

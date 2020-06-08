@@ -1,4 +1,6 @@
-FROM cuahsi/singleuser:python3
+ARG BASE_VERSION
+FROM cuahsi/singleuser-scientific-py3:$BASE_VERSION
+#FROM cuahsi/singleuser:python3
 
 MAINTAINER Tony Castronova <acastronova@cuahsi.org>
 

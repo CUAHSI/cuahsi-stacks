@@ -1,14 +1,15 @@
-
 # derived from the minimal singleuser image 
-# https://hub.docker.com/r/jupyterhub/singleuser/dockerfile
-FROM jupyterhub/singleuser
+
+ARG BASE_VERSION
+FROM jupyterhub/singleuser:$BASE_VERSION
 
 MAINTAINER Tony Castronova <acastronova@cuahsi.org>
 
 USER root
 
 # install system libs
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN export DEBIAN_FRONTEND=noninteractive \
+&& apt-get update && apt-get install -y --no-install-recommends \
 git \
 vim \
 ca-certificates \
@@ -33,10 +34,15 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key a
 #&& make \
 #&& rm -rf /tmp/*
 
-# install nbfetch
-RUN pip install hs_restclient hstools \
+USER jovyan
+
+RUN conda update -n base conda \
+&& pip install --upgrade pip \
+&& conda update --all
+
+# install nbfetch, hstools
+RUN pip install hs_restclient hstools==0.0.2 \
 && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
 && jupyter serverextension enable --py nbfetch --sys-prefix
-USER jovyan
 
 RUN rm -rf ~/work

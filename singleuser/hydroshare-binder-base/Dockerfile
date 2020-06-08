@@ -31,4 +31,12 @@ ONBUILD RUN rm -rf ${REPO_DIR}/.onbuild-child
 
 ONBUILD USER ${NB_USER}
 
+# TODO: move to cuahsi/singleuser:base
+RUN pip install jupyter-offlinenotebook
+
+RUN jupyter nbextension install --py jupyter_offlinenotebook --sys-prefix
+RUN jupyter nbextension enable --py jupyter_offlinenotebook --sys-prefix
+#RUN jupyter serverextension install --py jupyter_offlinenotebook --sys-prefix
+RUN jupyter serverextension enable --py jupyter_offlinenotebook --sys-prefix
+
 ENTRYPOINT ["/usr/local/bin/r2d_overlay.py", "start"]
