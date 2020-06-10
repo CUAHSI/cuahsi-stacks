@@ -4,7 +4,7 @@ services:
   ########
   # Base #
   ########
-  jupyterhub-base:
+  base:
     env_file:
       - '.env'
     build: 
@@ -17,6 +17,20 @@ services:
         description: |
           Base JupyterHub image from which all other CUAHSI singleuser environments are created. Built using jupyterhub/singleuser:${JH_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-base:${CUAHSI_BASE}
+  
+  #################
+  # Base CentOS 7 #
+  #################
+  base-centos7:
+    env_file:
+      - '.env'
+    build: 
+      context: ./base
+      dockerfile: Dockerfile
+      labels:
+        description: |
+          Base JupyterHub image from which all other CUAHSI singleuser environments are created in the CentOS7 operating system. Built using centos:centos7.7.1908 on ${BUILD_DATE}.
+    image: cuahsi/singleuser-base:centos7.${CUAHSI_BASE}
 
   ##############
   # Scientific #
@@ -69,4 +83,21 @@ services:
         description: |
           Environment configured for WRF-Hydro v5.0.3. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-wrfhydro-py3:v5.0.3-${CUAHSI_BASE}
+
+  ###########
+  # Parflow #
+  ###########
+  parflow:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-parflow
+      dockerfile: Dockerfile
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          Environment configured for Parflow. Built using cuahsi/singleuser-base:centos7.v${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-parflow:${CUAHSI_BASE}
 
