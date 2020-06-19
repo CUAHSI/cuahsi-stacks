@@ -52,4 +52,11 @@ RUN conda install -y nb_conda_kernels \
 ##&& rm -rf /tmp/*
 #
 
+# remove work dir b/c we're using "data"
 RUN rm -rf ~/work
+
+# set the home dir
+ENV HOME=/home/$NB_USER/data
+
+# set the default terminal start path to $HOME
+RUN echo 'cd $HOME' >> .profile
