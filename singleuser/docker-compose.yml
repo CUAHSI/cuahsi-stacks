@@ -25,7 +25,7 @@ services:
     env_file:
       - '.env'
     build: 
-      context: ./base
+      context: ./base-centos7
       dockerfile: Dockerfile
       labels:
         description: |

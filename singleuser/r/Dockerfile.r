@@ -62,10 +62,10 @@ USER $NB_USER
 RUN mkdir $HOME/.userRLib \
 && echo "options(repos=structure(c(CRAN=\"http://archive.linux.duke.edu/cran\")))" >> $HOME/.Rprofile \
 && conda config --add channels r \
-&& conda config --add channels conda-forge \
-&& conda create -y -n R 
+&& conda config --add channels conda-forge 
+#&& conda create -y -n R 
 
-RUN conda install -n R -c r -y \
+RUN conda install -c r -y \
   r-essentials \
   r-devtools \
   r-xml \
@@ -80,7 +80,7 @@ RUN conda install -n R -c r -y \
 
 #RUN /bin/bash -c "source activate R" \
 ARG PACKAGES='"WaterML","dplyer","rgrass7","dataRetrieval","stringi"'
-RUN /opt/conda/envs/R/bin/Rscript -e "install.packages(c($PACKAGES))" 
+RUN /opt/conda/bin/Rscript -e "install.packages(c($PACKAGES))" 
 
 # remove all registered kernels
 #RUN jupyter kernelspec remove -f $(jupyter kernelspec list | tr -s ' ' | cut -f 2 -d' ' | tail -n +2)

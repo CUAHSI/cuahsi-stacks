@@ -1,0 +1,44 @@
+ARG BASE_VERSION
+FROM cuahsi/singleuser-base:$BASE_VERSION
+
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    git \
+    make \
+    gfortran-6 \
+    libnetcdff-dev \
+    liblapack-dev \
+    vim \
+    && apt-get clean
+
+ENV F_MASTER /code
+ENV FC gfortran
+ENV FC_EXE gfortran
+ENV FC_ENV gfortran-6-docker
+
+# fetch tags and build summa
+#RUN git clone --single-branch --branch master https://github.com/NCAR/summa.git /code
+RUN git clone --single-branch --branch develop https://github.com/NCAR/summa.git /code
+
+# build the code
+RUN cd /code/build \
+&& git fetch --tags \
+&& make \
+&& mv /code/bin/summa.exe /usr/local/bin
+
+# install pysumma
+RUN git clone --single-branch --branch master https://github.com/UW-Hydro/pysumma.git /code/pysumma \
+&& cd /code/pysumma \
+&& git pull \
+&& pip install .
+
+# install other python libs and dependencies. i.e. cartopy is a pysumma dep
+RUN pip install \
+cartopy
+
+# clean up
+RUN rm -rf /code /home/jovyan/work
+    
+USER $NB_UID
