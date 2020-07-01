@@ -1,0 +1,9 @@
+name: hydrolearn_dev
+dependencies:
+- pip
+- pip:
+  - -r file:landlab-requirements.txt
+  - -r file:landlab-requirements-testing.txt
+  - -r file:landlab-requirements-dev.txt
+  - -r file:landlab-requirements-notebooks.txt
+  - -r file:slipperyfuture-mod3-requirements.txt

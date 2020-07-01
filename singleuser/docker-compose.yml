@@ -25,7 +25,7 @@ services:
     env_file:
       - '.env'
     build: 
-      context: ./base
+      context: ./base-centos7
       dockerfile: Dockerfile
       labels:
         description: |
@@ -65,6 +65,38 @@ services:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries with the R programming language. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-scientific-r:${CUAHSI_BASE}
+
+  ##############################
+  # 2020 Hydrogeology Syracuse #
+  ##############################
+  r-hydrogeology:
+    env_file:
+      - '.env'
+    build:
+      context: ./hydrogeology
+      dockerfile: Dockerfile
+      args:
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          CUAHSI JupyterHub singleuser environment configured with scientific libraries for Tao Wen's 2020 Hydrogeology course at Syracuse University. Built using cuahsi/singleuser-scientific-r:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-hydrogeology-r:${CUAHSI_BASE}
+
+  ######################
+  # 2020 WHW - Seattle #
+  ######################
+  whw:
+    env_file:
+      - '.env'
+    build:
+      context: ./waterhackweek
+      dockerfile: Dockerfile
+      args:
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          This environment is configured with scientific libraries for the 2020 Waterhackweek Cybertraining event. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
+        image: cuahsi/singleuser-waterhackweek:${CUAHSI_BASE}
 
   ################################
   # 2018 Near Surface Geophysics #
