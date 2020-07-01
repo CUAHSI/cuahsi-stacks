@@ -60,3 +60,6 @@ ENV HOME=/home/$NB_USER/data
 
 # set the default terminal start path to $HOME
 RUN echo 'cd $HOME' >> .profile
+
+RUN pip install nbserverproxy \
+&& jupyter serverextension enable --py nbserverproxy
