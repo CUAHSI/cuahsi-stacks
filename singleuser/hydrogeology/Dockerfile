@@ -47,6 +47,7 @@ RUN conda install -y --quiet \
 graphviz \
 pydot \
 configparser \
+descartes \ 
 && conda clean --all -f -y \
 && fix-permissions $CONDA_DIR
 

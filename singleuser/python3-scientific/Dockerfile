@@ -90,6 +90,17 @@ RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/T
 && mv /tmp/TauDEM/src/build/* /usr/local/bin \
 && rm -rf /tmp/TauDEM
 
+# TODO: move this to the base image
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends zip unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set GDAL and Proj env vars. This is necessary to ensure gdal commands don't error out when the base
+# conda environment is not explicitly activated.
+# see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
+ENV GDAL_DATA=/opt/conda/share/gdal \
+    PROJ_LIB=/opt/conda/share/proj
+
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
 

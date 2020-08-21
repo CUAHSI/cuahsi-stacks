@@ -47,7 +47,7 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-scientific-py3:${CUAHSI_BASE}
+    image: cuahsi/singleuser-scientific-py3:${BUILD_DATE}
 
   ##################
   # Scientific - R #
@@ -64,7 +64,7 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries with the R programming language. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-scientific-r:${CUAHSI_BASE}
+    image: cuahsi/singleuser-scientific-r:${BUILD_DATE}
 
   ##############################
   # 2020 Hydrogeology Syracuse #
@@ -80,7 +80,7 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries for Tao Wen's 2020 Hydrogeology course at Syracuse University. Built using cuahsi/singleuser-scientific-r:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-hydrogeology-r:${CUAHSI_BASE}
+    image: cuahsi/singleuser-hydrogeology-r:${BUILD_DATE}
 
   ######################
   # 2020 WHW - Seattle #
@@ -96,7 +96,7 @@ services:
       labels:
         description: |
           This environment is configured with scientific libraries for the 2020 Waterhackweek Cybertraining event. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
-        image: cuahsi/singleuser-waterhackweek:${CUAHSI_BASE}
+    image: cuahsi/singleuser-waterhackweek:${BUILD_DATE}
 
   ################################
   # 2018 Near Surface Geophysics #
@@ -113,7 +113,7 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured for the 2019 Near Surface Geophysics Workshop. This image uses WINE to run R2, gmsh,and pyres. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-geophysics:${CUAHSI_BASE}
+    image: cuahsi/singleuser-geophysics:${BUILD_DATE}
 
 
   ####################
@@ -131,7 +131,7 @@ services:
       labels:
         description: |
           Environment configured for WRF-Hydro v5.0.3. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-wrfhydro-py3:v5.0.3-${CUAHSI_BASE}
+    image: cuahsi/singleuser-wrfhydro-py3:v5.0.3-${BUILD_DATE}
 
   ###########
   # Parflow #
@@ -148,7 +148,7 @@ services:
       labels:
         description: |
           Environment configured for Parflow. Built using cuahsi/singleuser-base:centos7.v${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-parflow:${CUAHSI_BASE}
+    image: cuahsi/singleuser-parflow:${BUILD_DATE}
 
   #########
   # SUMMA #
@@ -165,5 +165,5 @@ services:
       labels:
         description: |
           Environment configured for SUMMA. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: cuahsi/singleuser-summa-py3:${CUAHSI_BASE}
+    image: cuahsi/singleuser-summa-py3:${BUILD_DATE}
 
