@@ -18,6 +18,8 @@ gnupg \
 wget \
 libgdal-dev \
 libmpich-dev \
+zip \ 
+unzip \
 && rm -rf /var/lib/apt/lists/*
 
 
@@ -34,23 +36,24 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch, hstools
-RUN pip install hs_restclient hstools==0.0.2 \
+RUN pip install hs_restclient hstools==0.0.3 \
 && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
 && jupyter serverextension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
 && conda clean --all -f -y
 
+RUN pip install nbserverproxy \
+&& jupyter serverextension enable --py nbserverproxy
 
+# install jupyter-server-proxy
+RUN conda install jupyter-server-proxy -c conda-forge -y
+RUN jupyter labextension install @jupyterlab/server-proxy
+RUN jupyter serverextension enable --sys-prefix jupyter_server_proxy
 
-### install TauDEM
-##ARG TAG=v5.3.7
-##RUN git clone --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
-##&& cd /tmp/TauDEM/src \
-##&& sed -i 's#\.\.#/usr/local/bin#g' makefile \
-##&& make \
-##&& rm -rf /tmp/*
-#
+# install system monitor
+RUN pip install nbresuse==0.3.3 \
+&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
@@ -61,5 +64,3 @@ ENV HOME=/home/$NB_USER/data
 # set the default terminal start path to $HOME
 RUN echo 'cd $HOME' >> .profile
 
-RUN pip install nbserverproxy \
-&& jupyter serverextension enable --py nbserverproxy

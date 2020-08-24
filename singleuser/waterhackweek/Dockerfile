@@ -1,12 +1,21 @@
 ARG BASE_VERSION
-FROM cuahsi/singleuser-scientific-py3:$BASE_VERSION
+FROM cuahsi/singleuser-base:$BASE_VERSION
+
+USER root
+
+# install system libs
+RUN export DEBIAN_FRONTEND=noninteractive \
+&& apt-get update && apt-get install -y --no-install-recommends \
+mpich \
+cmake \ 
+&& rm -rf /var/lib/apt/lists/*
 
 USER $NB_UID
 
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 # WHW Dependencies
-RUN conda install -y \
+RUN conda create -n whw -y \
 python=3.6 \
 ipython \
 ipykernel \
@@ -28,9 +37,6 @@ xlrd \
 && conda clean --all -f -y
 
 RUN pip install "jupyterlab>=1.0" jupyterlab-dash==0.1.0a3
-
-RUN jupyter labextension install jupyterlab-dash@0.1.0-alpha.3
-
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 RUN jupyter labextension install @bokeh/jupyter_bokeh
 
@@ -44,6 +50,22 @@ RUN jupyter labextension install @jupyterlab/server-proxy
 RUN jupyter serverextension enable --sys-prefix jupyter_server_proxy
 
 USER root
+# install TauDEM
+ARG TAG=Develop
+RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
+&& mkdir -p /tmp/TauDEM/src/build \
+&& cd /tmp/TauDEM/src/build \
+&& cmake .. \
+&& make \
+&& mv /tmp/TauDEM/src/build/* /usr/local/bin \
+&& rm -rf /tmp/TauDEM
+
+# Set GDAL and Proj env vars. This is necessary to ensure gdal commands don't error out when the base
+# conda environment is not explicitly activated.
+# see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
+ENV GDAL_DATA=/opt/conda/share/gdal \
+    PROJ_LIB=/opt/conda/share/proj
+
 RUN rm -rf XDG_CACHE_HOME/* \
 USER $NB_UID
 
