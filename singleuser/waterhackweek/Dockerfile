@@ -16,9 +16,10 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 # WHW Dependencies
 RUN conda create -n whw -y \
-python=3.6 \
+python \
 ipython \
 ipykernel \
+nb_conda_kernels \
 requests \
 geopandas \
 descartes \
@@ -26,13 +27,20 @@ geojson \
 rasterio \
 netcdf4 \
 xarray \
+rioxarray \
+regionmask \
 dask \
 ulmo \
+hydrodata \
 owslib \
+boto3 \
+s3fs \
+zarr \
 matplotlib \
 seaborn \
 cartopy \
 folium \
+contextily \
 xlrd \
 && conda clean --all -f -y
 
