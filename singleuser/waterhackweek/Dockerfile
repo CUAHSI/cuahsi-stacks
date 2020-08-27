@@ -21,6 +21,7 @@ ipython \
 ipykernel \
 nb_conda_kernels \
 requests \
+pandas<1.1 \
 geopandas \
 descartes \
 geojson \
