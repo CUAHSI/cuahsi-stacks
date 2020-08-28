@@ -39,6 +39,10 @@ RUN git clone --single-branch --branch master https://github.com/UW-Hydro/pysumm
 RUN pip install nbresuse==0.3.3 \
 && jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
+# conda installations
+RUN conda install -y \
+ descartes \
+ && conda clean --all -f -y
 
 # clean up
 RUN rm -rf /code /home/jovyan/work
