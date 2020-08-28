@@ -21,6 +21,7 @@ ipython \
 ipykernel \
 nb_conda_kernels \
 requests \
+pandas<1.1 \
 geopandas \
 descartes \
 geojson \
@@ -32,16 +33,28 @@ regionmask \
 dask \
 ulmo \
 hydrodata \
+intake \
+metpy \
+landlab \
 owslib \
 boto3 \
 s3fs \
 zarr \
+xlrd \
 matplotlib \
 seaborn \
 cartopy \
 folium \
 contextily \
-xlrd \
+# holoviz packages
+bokeh \
+colorcet \
+datashader \
+geoviews \
+holoviews \
+hvplot \
+panel \
+param \
 && conda clean --all -f -y
 
 RUN pip install "jupyterlab>=1.0" jupyterlab-dash==0.1.0a3
