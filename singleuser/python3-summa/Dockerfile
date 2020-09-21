@@ -42,6 +42,8 @@ RUN pip install nbresuse==0.3.3 \
 # conda installations
 RUN conda install -y \
  descartes \
+ metsim \
+ mizuroute \
  && conda clean --all -f -y
 
 # clean up

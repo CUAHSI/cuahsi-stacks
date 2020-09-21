@@ -21,7 +21,7 @@ ipython \
 ipykernel \
 nb_conda_kernels \
 requests \
-pandas<1.1 \
+"pandas<1.1" \
 geopandas \
 descartes \
 geojson \
@@ -46,7 +46,6 @@ seaborn \
 cartopy \
 folium \
 contextily \
-# holoviz packages
 bokeh \
 colorcet \
 datashader \
@@ -55,6 +54,7 @@ holoviews \
 hvplot \
 panel \
 param \
+scikit-learn \
 && conda clean --all -f -y
 
 RUN pip install "jupyterlab>=1.0" jupyterlab-dash==0.1.0a3
