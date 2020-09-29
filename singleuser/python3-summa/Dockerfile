@@ -44,6 +44,11 @@ RUN conda install -y \
  descartes \
  metsim \
  mizuroute \
+ cartopy \
+ seaborn \
+ scikit-learn \
+ rasterio \
+ gdal \
  && conda clean --all -f -y
 
 # clean up
