@@ -167,3 +167,20 @@ services:
           Environment configured for SUMMA. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-summa-py3:${BUILD_DATE}
 
+  ###############
+  # CSDMS TOOLS #
+  ###############
+  csdms:
+    env_file:
+      - '.env'
+    build:
+      context: ./csdms-tools
+      dockerfile: Dockerfile
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          Environment configured for the Community Surface Dynamics Modeling System. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-csdms-tools:${BUILD_DATE}
+

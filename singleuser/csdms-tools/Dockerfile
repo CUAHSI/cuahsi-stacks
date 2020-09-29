@@ -8,7 +8,8 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 RUN conda install -y \
 # pymt
-pymt \
+pymt==1.1.3 \
+pymt_hydrotrend==0.1.2 \
 pymt_ecsimplesnow \
 pymt_gipl \
 pymt_rafem \
@@ -36,10 +37,6 @@ USER root
 # see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
 ENV GDAL_DATA=/opt/conda/share/gdal \
     PROJ_LIB=/opt/conda/share/proj
-
-# install system monitor
-RUN pip install nbresuse==0.3.3 \
-&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 RUN rm -rf XDG_CACHE_HOME/* \
 USER $NB_UID
