@@ -20,6 +20,9 @@ libgdal-dev \
 libmpich-dev \
 zip \ 
 unzip \
+texlive-xetex \
+texlive-fonts-recommended \
+texlive-generic-recommended \
 && rm -rf /var/lib/apt/lists/*
 
 

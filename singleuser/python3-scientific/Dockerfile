@@ -96,9 +96,9 @@ RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/T
 ENV GDAL_DATA=/opt/conda/share/gdal \
     PROJ_LIB=/opt/conda/share/proj
 
-# install system monitor
-RUN pip install nbresuse==0.3.3 \
-&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
+## install system monitor
+#RUN pip install nbresuse==0.3.3 \
+#&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
