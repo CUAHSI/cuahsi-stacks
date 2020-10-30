@@ -37,6 +37,8 @@ USER $NB_UID
 # CONDA Config
 RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
+#RUN conda upgrade -y jupyterlab
+
 # HydroShare packages
 # install nbfetch, hstools
 RUN pip install hs_restclient hstools==0.0.3 \
@@ -56,7 +58,27 @@ RUN jupyter serverextension enable --sys-prefix jupyter_server_proxy
 
 # install system monitor
 RUN pip install nbresuse==0.3.3 \
-&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
+&& jupyter labextension install \
+  jupyterlab-topbar-extension \
+  jupyterlab-system-monitor
+
+# install and configure additional lab extensions
+RUN conda install -y \
+  --channel conda-forge \
+  --channel anaconda \
+  ipyleaflet \
+  nbconvert \
+  nbformat \
+  jupyter_client \
+&& conda clean --all -f -y
+
+RUN jupyter nbextension enable --py ipyleaflet
+RUN jupyter nbextension enable --py widgetsnbextension 
+
+RUN jupyter labextension install jupyter-leaflet
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager@1.1
+
+RUN jupyter lab build
 
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
