@@ -1,0 +1,109 @@
+ARG BASE_VERSION
+FROM jupyter/r-notebook:$BASE_VERSION
+
+############################
+# BEGIN: HydroShare Config #
+############################
+
+RUN rm -rf ~/work
+
+USER root
+# install system libs
+RUN export DEBIAN_FRONTEND=noninteractive \
+&& apt-get update && apt-get install -y --no-install-recommends \
+git \
+vim \
+ca-certificates \
+build-essential \
+gnupg \
+wget \
+libgdal-dev \
+libmpich-dev \
+&& rm -rf /var/lib/apt/lists/*
+
+# install icommands
+RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key add - \
+&& echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" | sudo tee /etc/apt/sources.list.d/renci-irods.list  \
+&& apt-get update \
+&& apt-get install -y irods-icommands
+
+USER $NB_UID
+
+# CONDA Config
+RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
+
+# HydroShare packages
+# install nbfetch, hstools
+RUN pip install hs_restclient hstools==0.0.2 \
+&& pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
+&& jupyter serverextension enable --py nbfetch --sys-prefix
+
+RUN conda install -y nb_conda_kernels \
+&& conda clean --all -f -y
+
+##########################
+# END: HydroShare Config #
+##########################
+
+# install nbrsessionproxy extension
+RUN conda install -yq -c conda-forge nbrsessionproxy && \
+    conda clean -tipsy
+
+# install rstudio-server
+USER root
+RUN apt-get update && \
+    curl --silent -L --fail https://download2.rstudio.org/rstudio-server-1.1.419-amd64.deb > /tmp/rstudio.deb && \
+    echo '24cd11f0405d8372b4168fc9956e0386 /tmp/rstudio.deb' | md5sum -c - && \
+    apt-get install -y /tmp/rstudio.deb && \
+    rm /tmp/rstudio.deb && \
+    apt-get clean
+ENV PATH=$PATH:/usr/lib/rstudio-server/bin
+USER $NB_USER
+
+#USER root
+#
+#RUN conda update conda -y \
+#&& conda clean --all -y
+#
+#USER jovyan
+#
+#RUN mkdir $HOME/.userRLib \
+#&& echo "options(repos=structure(c(CRAN=\"http://archive.linux.duke.edu/cran\")))" >> $HOME/.Rprofile \
+#&& conda config --add channels r \
+#&& conda config --add channels conda-forge \
+#&& conda create -y -n R 
+#
+#RUN conda install -n R -c r -y \
+#  r-base=3.5 \
+#  r-irkernel \
+#  r-essentials \
+#  r-devtools \
+#  r-xml \
+#  r-rjsonio \
+#  r-ncdf4 \
+#  r-sf \
+#  r-ggmap \
+#  r-mapdata \
+#  r-gridextra \
+#&& conda clean --all -y 
+#
+#
+##RUN /bin/bash -c "source activate R" \
+#ARG PACKAGES='"WaterML","dplyer","rgrass7","dataRetrieval","stringi"'
+#RUN /opt/conda/envs/R/bin/Rscript -e "install.packages(c($PACKAGES))" 
+#
+## remove all registered kernels
+##RUN jupyter kernelspec remove -f $(jupyter kernelspec list | tr -s ' ' | cut -f 2 -d' ' | tail -n +2)
+#
+## install the R kernel
+#USER root
+#RUN /opt/conda/envs/R/bin/python -m ipykernel install --prefix=/usr --name 'R-3.5.1'
+#USER jovyan
+#
+#RUN pip uninstall -y ipykernel
+#
+#USER root
+#RUN rm -rf /home/jovan/.cache/* \
+#&& fix-permissions $CONDA_DIR \
+#&& fix-permissions /home/$NB_USER 
+#USER $NB_UID

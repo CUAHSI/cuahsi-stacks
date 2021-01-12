@@ -60,6 +60,7 @@ patsy \
 RUN conda install -y \
 netcdf4 \
 h5py \
+geemap \
 && conda clean --all -f -y 
 
 # Data - PYPI

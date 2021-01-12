@@ -124,5 +124,7 @@ RUN mkdir -p build && \
 
 USER $NB_UID
 
+RUN pip install pftools==0.0.6 numpy parflowio
+
 # add code directory
 WORKDIR /home/jovyan

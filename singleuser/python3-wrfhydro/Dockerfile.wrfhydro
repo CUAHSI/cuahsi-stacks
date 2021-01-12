@@ -1,10 +1,11 @@
 ARG BASE_VERSION
+ARG MODEL_VERSION
 FROM cuahsi/singleuser-base:$BASE_VERSION
 
 USER root
 
 ENV XDG_CACHE_HOME=/home/$NB_USER/.cache/ \
-    VERSION=v5.0.3 \
+    VERSION=$MODEL_VERSION \
     H5DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial \
     NCDIR=/usr/local \
     NFDIR=/usr/local \
@@ -108,7 +109,7 @@ ADD setEnvar.sh /tmp/wrf_hydro_nwm_public/trunk/NDHMS
 # Build the code
 RUN cd /tmp/wrf_hydro_nwm_public/trunk/NDHMS \
     && echo 2 | ./configure \
-    && ./compile_offline_NoahMP.sh setEnvar.sh
+    && ./compile_offline_NoahMP.sh setEnvar.sh \
     && mkdir -p /home/jovyan/wrfhydro/FORCING \ 
     && mkdir -p /home/jovyan/wrfhydro/DOMAIN \ 
     && mkdir -p /home/jovyan/wrfhydro/OUTPUT \ 

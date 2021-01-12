@@ -16,4 +16,4 @@ cp docker-stacks/base-notebook/start-singleuser.sh .
 cp docker-stacks/base-notebook/start.sh .
 rm -rf docker-stacks
 
-docker build -f Dockerfile -t cuahsi/singleuser-base:centos7.v$TAG .
+docker build -f Dockerfile -t cuahsi/singleuser-base:centos7.$TAG .

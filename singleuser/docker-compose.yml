@@ -184,3 +184,21 @@ services:
           Environment configured for the Community Surface Dynamics Modeling System. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-csdms-tools:${BUILD_DATE}
 
+  #############
+  # WRF-Hydro #
+  #############
+  wrfhydro:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-wrfhydro
+      dockerfile: Dockerfile.wrfhydro
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+        # wrfhydro model version
+        MODEL_VERSION: v5.0.3
+      labels:
+        description: |
+          Environment configured for the NCAR WRF-Hydro model. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-wrfhydro:${BUILD_DATE}
