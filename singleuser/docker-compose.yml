@@ -190,6 +190,8 @@ services:
   wrfhydro:
     env_file:
       - '.env'
+    environment:
+      - VERSION='nwm-v2.0'
     build:
       context: ./python3-wrfhydro
       dockerfile: Dockerfile.wrfhydro
@@ -197,8 +199,8 @@ services:
         # cuahsi/scientific version to use as base
         BASE_VERSION: ${CUAHSI_BASE}
         # wrfhydro model version
-        MODEL_VERSION: v5.0.3
+        MODEL_VERSION: "nwm-v2.0"
       labels:
         description: |
-          Environment configured for the NCAR WRF-Hydro model. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+          Environment configured for the NCAR WRF-Hydro model (nwm v2.0). Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-wrfhydro:${BUILD_DATE}
