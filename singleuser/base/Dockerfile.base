@@ -9,7 +9,7 @@ USER root
 
 # install system libs
 RUN export DEBIAN_FRONTEND=noninteractive \
-&& apt-get update && apt-get install -y --no-install-recommends \
+&& apt update && apt install -y --no-install-recommends \
 git \
 vim \
 ca-certificates \
@@ -21,23 +21,39 @@ libmpich-dev \
 zip \ 
 unzip \
 texlive-xetex \
-texlive-fonts-recommended \
-texlive-generic-recommended \
+texlive-latex-recommended \
 && rm -rf /var/lib/apt/lists/*
 
 
-# install icommands
+# install icommands using pattern documented in: 
+# https://github.com/irods/irods/issues/4883
+
+# prepare iRODs APT repository
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key add - \
 && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" | sudo tee /etc/apt/sources.list.d/renci-irods.list  \
-&& apt-get update \
-&& apt-get install -y irods-icommands
+&& apt-get update 
+
+# install iRODs dependencies
+RUN wget -c \
+  http://security.ubuntu.com/ubuntu/pool/main/p/python-urllib3/python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+  http://security.ubuntu.com/ubuntu/pool/main/r/requests/python-requests_2.18.4-2ubuntu0.1_all.deb \
+http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.5_amd64.deb \
+&& apt install -y \
+  ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+  ./python-requests_2.18.4-2ubuntu0.1_all.deb \
+  ./libssl1.0.0_1.0.2n-1ubuntu5.5_amd64.deb \
+&& rm -rf \
+  ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+  ./python-requests_2.18.4-2ubuntu0.1_all.deb \
+  ./libssl1.0.0_1.0.2n-1ubuntu5.5_amd64.deb
+
+# install iRODs icommands
+RUN apt install -y irods-icommands
 
 USER $NB_UID
 
 # CONDA Config
 RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
-
-#RUN conda upgrade -y jupyterlab
 
 # HydroShare packages
 # install nbfetch, hstools
@@ -76,7 +92,7 @@ RUN jupyter nbextension enable --py ipyleaflet
 RUN jupyter nbextension enable --py widgetsnbextension 
 
 RUN jupyter labextension install jupyter-leaflet
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager@1.1
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 RUN jupyter lab build
 
