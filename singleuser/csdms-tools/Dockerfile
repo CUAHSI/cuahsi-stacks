@@ -8,9 +8,11 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 # pymt
 RUN conda install -y -c conda-forge \
-pymt==1.3.0 \
-pymt_hydrotrend==0.2.1 \
+pymt==1.3.1 \
+child==21.03.12 \
+pymt_child==0.2.1 \
 hydrotrend==3.1.2 \
+pymt_hydrotrend==0.2.1 \
 pymt_sedflux==0.2.0 \
 sedflux==2.3.1 \
 pymt_ecsimplesnow==0.2.5 \
