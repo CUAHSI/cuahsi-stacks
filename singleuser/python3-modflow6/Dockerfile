@@ -1,7 +1,8 @@
-ARG BASE_VERSION
-FROM cuahsi/singleuser-base:$BASE_VERSION
+FROM cuahsi/singleuser-base:2021.01.13
 
 USER root
+
+RUN sudo apt install ca-certificates
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
@@ -15,7 +16,6 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN conda install -y \
 python-wget \
 requests \
-git pip \
 && conda clean --all -f -y 
 
 # Numerical
@@ -23,6 +23,7 @@ RUN conda install -y \
 pandas \
 scipy \
 numpy \
+openblas \
 && conda clean --all -f -y 
 
 # Geospatial
@@ -50,8 +51,15 @@ netcdf4 \
 h5py \
 && conda clean --all -f -y 
 
-# install flopy
-RUN pip install git+git://github.com/modflowpy/flopy@develop && conbda clean --all -f -y
+# get the MODFLOW binaries
+RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/download/2.0/linux.zip?raw=true \
+&& mkdir binaries \
+&& unzip linux.zip -d binaries \
+&& rm linux.zip 
+
+# add binaries to the path
+ENV PATH="./binaries:${PATH}"
+
 
 # Import matplotlib the first time to build the font cache.
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
@@ -61,15 +69,6 @@ USER root
 RUN apt update && apt install -y cmake \
 && rm -rf /var/lib/apt/lists/*
 
-# install TauDEM
-ARG TAG=Develop
-RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
-&& mkdir -p /tmp/TauDEM/src/build \
-&& cd /tmp/TauDEM/src/build \
-&& cmake .. \
-&& make \
-&& mv /tmp/TauDEM/src/build/* /usr/local/bin \
-&& rm -rf /tmp/TauDEM
 
 # Set GDAL and Proj env vars. This is necessary to ensure gdal commands don't error out when the base
 # conda environment is not explicitly activated.
