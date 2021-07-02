@@ -204,3 +204,37 @@ services:
         description: |
           Environment configured for the NCAR WRF-Hydro model (nwm v2.0). Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-wrfhydro:${BUILD_DATE}
+
+  #############
+  #  SI-2021  #
+  #############
+  si2021:
+    env_file:
+      - '.env'
+    build:
+      context: ./si-2021
+      dockerfile: Dockerfile
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          Environment configured for the 2021 SI. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-si2021:${BUILD_DATE}
+  
+  #############
+  #  MODFLOW  #
+  #############
+  modflow:
+    env_file:
+      - '.env'
+    build:
+      context: ./python3-modflow6
+      dockerfile: Dockerfile
+      args:
+        # cuahsi/scientific version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+      labels:
+        description: |
+          Environment configured to run MODFLOW. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-modflow:${BUILD_DATE}

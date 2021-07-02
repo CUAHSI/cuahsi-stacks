@@ -7,7 +7,7 @@ RUN apt-get update && \
     ca-certificates \
     git \
     make \
-    gfortran-6 \
+    gfortran \
     libnetcdff-dev \
     liblapack-dev \
     vim \
@@ -28,19 +28,19 @@ RUN cd /code/build \
 && make \
 && mv /code/bin/summa.exe /usr/local/bin
 
-# install pysumma
-RUN git clone --single-branch --branch master https://github.com/UW-Hydro/pysumma.git /code/pysumma \
-&& cd /code/pysumma \
-&& git pull \
-&& conda install numpy -y \
-&& pip install .
+## install pysumma
+#RUN git clone --single-branch --branch master https://github.com/UW-Hydro/pysumma.git /code/pysumma \
+#&& cd /code/pysumma \
+#&& git pull \
+#&& conda install numpy -y \
+#&& pip install .
 
 # install system monitor
 RUN pip install nbresuse==0.3.3 \
 && jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 # conda installations
-RUN conda install -y \
+RUN conda install -c conda-forge -y \
  descartes \
  metsim \
  mizuroute \
@@ -49,6 +49,7 @@ RUN conda install -y \
  scikit-learn \
  rasterio \
  gdal \
+ pysumma=3.0.3 \
  && conda clean --all -f -y
 
 # clean up
