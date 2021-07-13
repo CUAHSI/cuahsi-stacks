@@ -61,16 +61,6 @@ RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/do
 ENV PATH="./binaries:${PATH}"
 
 
-# get the class materials from github
-RUN curl -L -o class.zip https://github.com/jdhughes-usgs/iah2021-brazil-mf6/archive/refs/heads/main.zip \
-&& mkdir iah_class_materials \
-&& unzip class.zip -d iah_class_materials \
-&& rm class.zip 
-
-ENV PYTHONPATH="./iah_class_materials/python_packages/flopy:${PYTHONPATH}"
-
-
-
 # Import matplotlib the first time to build the font cache.
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
@@ -89,6 +79,13 @@ ENV GDAL_DATA=/opt/conda/share/gdal \
 ## install system monitor
 #RUN pip install nbresuse==0.3.3 \
 #&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
+
+# get the class materials from github
+RUN curl -L -o class.zip https://github.com/jdhughes-usgs/iah2021-brazil-mf6/archive/refs/heads/main.zip \
+&& unzip class.zip  \
+&& rm class.zip 
+
+ENV PYTHONPATH="${PYTHONPATH}:./iah2021-brazil-mf6-main/python_packages"
 
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
