@@ -81,11 +81,12 @@ ENV GDAL_DATA=/opt/conda/share/gdal \
 #&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 # get the class materials from github
-RUN curl -L -o class.zip https://github.com/jdhughes-usgs/iah2021-brazil-mf6/archive/refs/heads/main.zip \
-&& unzip class.zip  \
-&& rm class.zip 
+RUN git clone https://github.com/jdhughes-usgs/iah2021-brazil-mf6.git /opt/iah2021-brazil-mf6 \
+&& chmod -R 777 /opt/iah2021-brazil-mf6
 
-ENV PYTHONPATH="${PYTHONPATH}:./iah2021-brazil-mf6-main/python_packages"
+COPY setup_files.py /home/jovyan/setup_files.py
+
+ENV PYTHONPATH="${PYTHONPATH}:/opt/iah2021-brazil-mf6/python_packages"
 
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
