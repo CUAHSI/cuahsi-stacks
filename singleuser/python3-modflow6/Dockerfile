@@ -81,7 +81,7 @@ ENV PATH="/home/jovyan/binaries:${PATH}"
 RUN git clone --depth 1 https://github.com/modflowpy/flopy.git /opt/flopy \
 && chmod -R 777 /opt/flopy
 
-ENV PYTHONPATH="${PYTHONPATH}:/opt/flopy/flopy"
+ENV PYTHONPATH="${PYTHONPATH}:/opt/flopy"
 
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
