@@ -1,12 +1,13 @@
-ARG BASE_VERSION
-FROM cuahsi/singleuser-base:$BASE_VERSION
+
+
+FROM cuahsi/singleuser-base:2021.01.13
 
 USER root
 
 RUN sudo apt install ca-certificates
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
+    apt-get install -y --no-install-recommends ffmpeg  && \
     rm -rf /var/lib/apt/lists/*
 
 USER $NB_UID
@@ -52,14 +53,6 @@ netcdf4 \
 h5py \
 && conda clean --all -f -y 
 
-# get the MODFLOW binaries
-RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/download/2.0/linux.zip?raw=true \
-&& mkdir binaries \
-&& unzip linux.zip -d binaries \
-&& rm linux.zip 
-
-# add binaries to the path
-ENV PATH="/home/jovyan/binaries:${PATH}"
 
 # Import matplotlib the first time to build the font cache.
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
@@ -74,6 +67,21 @@ RUN apt update && apt install -y cmake \
 # see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
 ENV GDAL_DATA=/opt/conda/share/gdal \
     PROJ_LIB=/opt/conda/share/proj
+
+# get the MODFLOW binaries
+RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/latest/download/linux.zip?raw=true \
+&& mkdir binaries \
+&& unzip linux.zip -d binaries \
+&& rm linux.zip  
+
+# add binaries to the path
+ENV PATH="/home/jovyan/binaries:${PATH}"
+
+# install flopy
+RUN git clone --depth 1 https://github.com/modflowpy/flopy.git /opt/flopy \
+&& chmod -R 777 /opt/flopy
+
+ENV PYTHONPATH="${PYTHONPATH}:/opt/flopy/flopy"
 
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
