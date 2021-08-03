@@ -52,7 +52,7 @@ h5py \
 && conda clean --all -f -y 
 
 # get the MODFLOW binaries
-RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/download/2.0/linux.zip?raw=true \
+RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/latest/download/linux.zip?raw=true \
 && mkdir binaries \
 && unzip linux.zip -d binaries \
 && rm linux.zip 
@@ -81,7 +81,7 @@ ENV GDAL_DATA=/opt/conda/share/gdal \
 #&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
 # get the class materials from github
-RUN git clone https://github.com/jdhughes-usgs/iah2021-brazil-mf6.git /opt/iah2021-brazil-mf6 \
+RUN git clone --depth 1 https://github.com/jdhughes-usgs/iah2021-brazil-mf6.git /opt/iah2021-brazil-mf6 \
 && chmod -R 777 /opt/iah2021-brazil-mf6
 
 COPY setup_files.py /home/jovyan/setup_files.py
