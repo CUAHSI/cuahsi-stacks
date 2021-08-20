@@ -61,7 +61,7 @@ RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/la
 && rm linux.zip 
 
 # add binaries to the path
-ENV PATH="./binaries:${PATH}"
+ENV PATH="/home/jovyan/binaries:${PATH}"
 
 
 # Import matplotlib the first time to build the font cache.
