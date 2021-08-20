@@ -40,6 +40,7 @@ rasterio \
 rasterstats \ 
 imageio \
 imageio-ffmpeg \
+pyshp \
 && conda clean --all -f -y 
 
 # Statistics
