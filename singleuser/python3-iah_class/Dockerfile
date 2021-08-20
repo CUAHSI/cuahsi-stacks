@@ -37,7 +37,9 @@ RUN conda install -y \
 matplotlib \
 seaborn \
 rasterio \
-rasterstats \
+rasterstats \ 
+imageio \
+imageio-ffmpeg \
 && conda clean --all -f -y 
 
 # Statistics
