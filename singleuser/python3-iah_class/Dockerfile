@@ -78,6 +78,9 @@ RUN apt update && apt install -y cmake \
 ENV GDAL_DATA=/opt/conda/share/gdal \
     PROJ_LIB=/opt/conda/share/proj
 
+## quick update of ipykernel
+RUN pip install --upgrade ipykernel
+
 ## install system monitor
 #RUN pip install nbresuse==0.3.3 \
 #&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
