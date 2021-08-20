@@ -229,12 +229,12 @@ services:
     env_file:
       - '.env'
     build:
-      context: ./python3-modflow6
+      context: ./python3-iah_class
       dockerfile: Dockerfile
       args:
         # cuahsi/scientific version to use as base
         BASE_VERSION: ${CUAHSI_BASE}
       labels:
         description: |
-          Environment configured to run MODFLOW. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
+          Environment configured to run MODFLOW for the 2021 IAH conference. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-modflow:${BUILD_DATE}
