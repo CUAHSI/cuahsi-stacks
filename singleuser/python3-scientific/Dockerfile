@@ -22,6 +22,10 @@ dask \
 dill \
 && conda clean --all -f -y 
 
+#---------------
+# Conda packages
+#---------------
+
 # Numerical
 RUN conda install -y \
 pandas \
@@ -67,11 +71,23 @@ geemap \
 RUN conda install -y \
 landlab \
 && conda clean --all -f -y 
+#---------------
+
+#-------------
+# PIP packages
+#-------------
 
 # Modeling
 RUN pip install \
 ogh \
 ulmo 
+
+# Data
+RUN pip install \
+dataretrieval==0.7
+
+#-------------
+
 
 # Import matplotlib the first time to build the font cache.
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
