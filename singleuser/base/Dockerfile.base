@@ -89,13 +89,26 @@ RUN conda install -y \
   jupyter_client \
 && conda clean --all -f -y
 
-RUN jupyter nbextension enable --py ipyleaflet
-RUN jupyter nbextension enable --py widgetsnbextension 
+RUN jupyter nbextension enable --py ipyleaflet \
+ && jupyter nbextension enable --py widgetsnbextension \
+ && jupyter labextension install jupyter-leaflet \
+ && jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
-RUN jupyter labextension install jupyter-leaflet
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+# install hs_sync
+RUN git clone -b make-frontend-jupyter-lab-plugin https://github.com/aaraney/hydroshare_jupyter_sync.git /tmp/hydroshare_jupyter_sync
 
-RUN jupyter lab build
+ADD ./hydroshare_jupyter_sync_config /home/jovyan/data/.hydroshare_jupyter_sync_config
+
+WORKDIR /tmp/hydroshare_jupyter_sync 
+RUN npm install -g yarn \
+ && git pull \
+ && pip install -e . \
+ && cd webapp \
+ && yarn \
+ && yarn build \
+ && yarn install_extension
+
+RUN jupyter serverextension enable --py hydroshare_jupyter_sync --sys-prefix
 
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
