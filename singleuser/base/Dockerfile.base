@@ -117,7 +117,7 @@ RUN rm -rf ~/work
 ENV HOME=/home/$NB_USER/data
 
 # copy hydroshare on jupyter config file
-COPY ./hydroshare_on_jupyter_conf ${HOME}/.config/hydroshare_jupyter_sync/config
+COPY ./hydroshare_on_jupyter_conf ${HOME}/.config/hydroshare_on_jupyter/config
 
 # set the default terminal start path to $HOME
 RUN echo 'cd $HOME' >> .profile
