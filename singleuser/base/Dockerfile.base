@@ -58,7 +58,7 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch, hstools
-RUN pip install hs_restclient hstools==0.0.3 hsclient==0.1.7 \
+RUN pip install hs_restclient hstools hsclient \
   && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
   && jupyter serverextension enable --py nbfetch --sys-prefix
 
@@ -94,31 +94,20 @@ RUN jupyter nbextension enable --py ipyleaflet \
   && jupyter labextension install jupyter-leaflet \
   && jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
-# install hs_sync
-RUN git clone -b make-frontend-jupyter-lab-plugin https://github.com/aaraney/hydroshare_jupyter_sync.git /tmp/hydroshare_jupyter_sync
+# set the home dir
+ENV HOME=/home/$NB_USER/data
 
-ADD ./hydroshare_jupyter_sync_config /home/jovyan/data/.hydroshare_jupyter_sync_config
+# set the default terminal start path to $HOME
+RUN echo 'cd $HOME' >> .profile
 
-WORKDIR /tmp/hydroshare_jupyter_sync 
-RUN npm install -g yarn \
-  && git pull \
-  && pip install -e . \
-  && cd webapp \
-  && yarn \
-  && yarn build \
-  && yarn install_extension
+# install and configure hydroshare on jupyter
+RUN pip install hydroshare-on-jupyter==0.1.0 && \
+  python -m hydroshare_on_jupyter configure
 
-RUN jupyter serverextension enable --py hydroshare_jupyter_sync --sys-prefix
+# copy hydroshare on jupyter config file
+COPY ./hydroshare_on_jupyter_conf ${HOME}/.config/hydroshare_on_jupyter/config
 
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
 
-# set the home dir
-ENV HOME=/home/$NB_USER/data
-
-# copy hydroshare on jupyter config file
-COPY ./hydroshare_on_jupyter_conf ${HOME}/.config/hydroshare_jupyter_sync/config
-
-# set the default terminal start path to $HOME
-RUN echo 'cd $HOME' >> .profile
 
