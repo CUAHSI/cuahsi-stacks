@@ -108,9 +108,6 @@ RUN pip install hydroshare-on-jupyter==0.1.0 && \
 ENV DATA=${HOME}/downloads
 ENV OAUTH=${HOME}/.hs_auth
 
-# copy hydroshare on jupyter config file
-COPY ./hydroshare_on_jupyter_conf ${HOME}/.config/hydroshare_on_jupyter/config
-
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
 
