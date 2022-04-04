@@ -1,0 +1,212 @@
+#ARG BASE_VERSION
+#FROM cuahsi/singleuser-base:$BASE_VERSION
+FROM cuahsi/singleuser-base:2021.01.13
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    subversion \
+    libtool \
+    flex \
+    g++ \
+    gfortran \
+    libstdc++6 \
+    byacc \
+    libexpat1-dev \
+    uuid-dev \
+    ruby \
+    gedit \
+    && rm -rf /var/lib/apt/lists/*
+
+# install DFlow dependencies
+WORKDIR /tmp
+ENV BASHRC="~/.bashrc"
+      
+# Install zlib
+#v=1.2.8  
+#sudo make check install
+RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz \
+&& tar -xf zlib-1.2.8.tar.gz \
+&& cd zlib-1.2.8 \
+&& ./configure --prefix=/usr/local \
+&& make install
+
+
+# Install HDF5
+#v=1.8.13
+#echo "# HDF5 libraries for Delft3D" 
+ENV HDF5_DIR="/usr/local/hdf5-1.8.13" 
+RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz \
+&& tar -xf hdf5-1.8.13.tar.gz && cd hdf5-1.8.13 \
+&& ./configure --enable-shared --enable-hl --prefix=$HDF5_DIR \
+&& make -j 4 \
+&& make install
+
+# Install Netcdf
+#v=4.4.1
+#echo "# NETCDF4 libraries for Delft3D" 
+ENV NETCDF4_DIR="/usr/local/netcdf_4.4" 
+RUN wget http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.4.1.tar.gz \
+&& tar -xf netcdf-4.4.1.tar.gz && cd netcdf-4.4.1 \
+&& CPPFLAGS=-I$HDF5_DIR/include LDFLAGS=-L$HDF5_DIR/lib ./configure --enable-netcdf-4 --enable-shared --enable-dap --prefix=$NETCDF4_DIR \
+&& make \
+&& make install
+
+
+ENV PATH=$PATH:$NETCDF4_DIR/bin
+ENV LD_LIBRARY_PATH=$NETCDF4_DIR/lib:$LD_LIBRARY_PATH
+ENV PKG_CONFIG_PATH=$NETCDF4_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
+
+
+# Install Netcdf-fortran
+#v=4.4.4
+RUN wget http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-fortran-4.4.4.tar.gz \
+&& tar -xf netcdf-fortran-4.4.4.tar.gz && cd netcdf-fortran-4.4.4 \
+&& CPPFLAGS=-I$NETCDF4_DIR/include LDFLAGS=-L$NETCDF4_DIR/lib LD_LIBRARY_PATH=$NETCDF4_DIR/lib:$LD_LIBRARY_PATH ./configure --prefix=$NETCDF4_DIR \
+&& make \
+&& make install
+
+
+# Install mpi
+#v=3.2
+ENV MPICH2_3_2_DIR="/usr/local/mpich-3.2" 
+RUN wget http://www.mpich.org/static/downloads/3.2/mpich-3.2.tar.gz \
+&& tar -xzf mpich-3.2.tar.gz \
+&& cd mpich-3.2 \
+&& ./configure --prefix=$MPICH2_3_2_DIR \
+&& make \
+&& make install
+
+
+ENV PATH=$PATH:$MPICH2_3_2_DIR/bin
+ENV LD_LIBRARY_PATH=$MPICH2_3_2_DIR/lib:$LD_LIBRARY_PATH
+ENV PKG_CONFIG_PATH=$MPICH2_3_2_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
+
+# Install DFlow
+COPY dflow /tmp/dflow
+WORKDIR /tmp/dflow/src
+
+#RUN ./build_ubuntu1604.sh -gnu -64bit
+ARG ACLOCAL=""
+ARG AUTOMAKE=""
+ARG AUTOHEADER=""
+ARG AUTOCONF=""
+ARG AUTORECONF_FLAGS=""
+ARG LIBTOOLIZE=""
+ARG LDFLAGS=""
+ARG LDFLAGSMT_ADDITIONAL=" "
+ARG LD_LIBRARY_PATH="/usr/local/netcdf_4.4/lib:/usr/lib/gcc/x86_64-linux-gnu/9:/usr/local/mpich-3.2/lib:/usr/local/netcdf_4.4/lib:"
+ARG MPIFC="/usr/local/mpich-3.2/bin/mpif90"
+ARG MPI_INCLUDE="/usr/local/mpich-3.2/include"
+ARG MPILIBS_ADDITIONAL="-L/usr/local/mpich-3.2/lib -lfmpich -lmpich -lmpl"
+ARG PKG_CONFIG_PATH="/usr/local/netcdf_4.4/lib/pkgconfig:/usr/local/mpich-3.2/lib/pkgconfig:/usr/local/netcdf_4.4/lib/pkgconfig:"
+ARG PATH="/usr/local/mpich-3.2/bin:/usr/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/netcdf_4.4/bin:/usr/local/mpich-3.2/bin"
+
+
+
+
+
+
+
+#USER $NB_UID
+#WORKDIR /home/jovyan 
+
+
+
+
+#ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+#
+## System libs
+#RUN conda install -y \
+#python-wget \
+#requests \
+#requests-toolbelt \
+#requests-oauthlib \
+#beautifulsoup4 \
+#dask \
+#dill \
+#&& conda clean --all -f -y 
+#
+## Numerical
+#RUN conda install -y \
+#pandas \
+#scipy \
+#scikit-learn \
+#scikit-image \
+#sympy \
+#numexpr \
+#openblas \
+#&& conda clean --all -f -y 
+#
+## Geospatial
+#RUN conda install -y \
+#geopandas \
+#gdal \
+#&& conda clean --all -f -y 
+#
+## Plotting
+#RUN conda install -y \
+#graphviz \
+#matplotlib \
+#seaborn \
+#basemap-data-hires \
+#bokeh \
+#rasterio \
+#rasterstats \
+#&& conda clean --all -f -y 
+#
+## Statistics
+#RUN conda install -y \
+#statsmodels \
+#patsy \
+#&& conda clean --all -f -y 
+#
+## Data - Conda
+#RUN conda install -y \
+#netcdf4 \
+#h5py \
+#geemap \
+#&& conda clean --all -f -y 
+#
+## Data - PYPI
+#RUN conda install -y \
+#landlab \
+#&& conda clean --all -f -y 
+#
+## Modeling
+#RUN pip install \
+#ogh \
+#ulmo 
+#
+## Import matplotlib the first time to build the font cache.
+#RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
+#    fix-permissions /home/$NB_USER
+#
+#USER root
+#RUN apt update && apt install -y cmake \
+#&& rm -rf /var/lib/apt/lists/*
+#
+## install TauDEM
+#ARG TAG=Develop
+#RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
+#&& mkdir -p /tmp/TauDEM/src/build \
+#&& cd /tmp/TauDEM/src/build \
+#&& cmake .. \
+#&& make \
+#&& mv /tmp/TauDEM/src/build/* /usr/local/bin \
+#&& rm -rf /tmp/TauDEM
+#
+## Set GDAL and Proj env vars. This is necessary to ensure gdal commands don't error out when the base
+## conda environment is not explicitly activated.
+## see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
+#ENV GDAL_DATA=/opt/conda/share/gdal \
+#    PROJ_LIB=/opt/conda/share/proj
+#
+### install system monitor
+##RUN pip install nbresuse==0.3.3 \
+##&& jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
+#
+#RUN rm -rf XDG_CACHE_HOME/*
+#USER $NB_UID
+
