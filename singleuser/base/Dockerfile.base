@@ -81,13 +81,19 @@ RUN pip install nbresuse==0.3.3 \
 
 # install and configure additional lab extensions
 RUN conda install -y \
+  mamba \
+  && mamba clean --all -f -y
+
+RUN mamba install -y \
   --channel conda-forge \
   --channel anaconda \
   ipyleaflet \
   nbconvert \
   nbformat \
   jupyter_client \
-  && conda clean --all -f -y
+  mamba \
+  ipympl \
+  && mamba clean --all -f -y
 
 RUN jupyter nbextension enable --py ipyleaflet \
   && jupyter nbextension enable --py widgetsnbextension \
@@ -101,7 +107,7 @@ ENV HOME=/home/$NB_USER/data
 RUN echo 'cd $HOME' >> .profile
 
 # install and configure hydroshare on jupyter
-RUN pip install hydroshare-on-jupyter==0.1.0 && \
+RUN pip install hydroshare-on-jupyter==0.1.5 && \
   python -m hydroshare_on_jupyter configure
 
 
