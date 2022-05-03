@@ -1,0 +1,12 @@
+
+
+build:
+
+docker build -t castrona/dflow:ubuntu.1604 -f Dockerfile.1604 .
+
+
+push:
+
+docker push castrona/dflow:ubuntu.1604
+
+
