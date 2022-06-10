@@ -1,0 +1,134 @@
+# Distributor ID:	Ubuntu
+# Description:	Ubuntu 20.04.3 LTS
+# Release:	20.04
+# Codename:	focal
+
+FROM cuahsi/singleuser-base:2022.04.04
+
+
+
+USER root
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    vim \
+    htop \
+    pciutils \
+    software-properties-common \ 
+    wget \
+    gcc \
+    curl \
+    git \
+    nvidia-cuda-toolkit \
+    # libtinfo6
+ && rm -rf /var/lib/apt/lists/*
+
+# Allow drivers installed by the nvidia-driver-installer to be located
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/nvidia/lib64:/opt/conda/lib
+# Also, utilities like `nvidia-smi` are installed here
+ENV PATH=${PATH}:/usr/local/nvidia/bin
+
+USER $NB_UID
+
+
+#RUN pip install \
+#    tensorflow-gpu 
+
+##RUN pip install cupy-cuda101
+
+#RUN mamba install -y \
+    #    cudatoolkit \
+    #    cudnn
+
+
+# Numerical
+RUN mamba install -y \
+    python-wget \
+    requests \
+    requests-toolbelt \
+    requests-oauthlib \
+    dask \
+    dill \
+    nb_conda_kernels \
+    numpy \
+    pandas \
+    scipy \
+    scikit-learn \
+    scikit-image \
+    sympy \
+    numexpr \
+    openblas \
+    matplotlib \
+    seaborn \
+    rasterio \
+    statsmodels \
+    netcdf4 \
+    xarray \
+ && mamba clean --all -f -y 
+
+# install pytorch
+RUN pip install \
+    torch \
+    numba \
+    hsclient \ 
+    hstools \
+    tensorboard
+
+## https://stackoverflow.com/questions/55152948/juypter-notebook-shows-blank-page
+#RUN pip install --update notebook
+
+RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
+
+
+### Install CUDA
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+# && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+# && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
+# && add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /" \
+# && apt-get update \
+# && apt-get -y install cuda \
+# && rm -rf /var/lib/apt/lists/*
+
+
+
+#curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-11-7_11.7.0-1_amd64.deb
+#dpkg -i ./cuda-11-7_11.7.0-1_amd64.deb
+#apt-get update
+#apt-get install cuda -y
+#
+## NVIDIA Runtime
+#curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | sudo apt-key add -
+#distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+#curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list |\
+#    sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+#sudo apt-get update
+#sudo apt-get install nvidia-container-runtime
+
+
+#RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/debian10/x86_64/7fa2af80.pub \
+# && add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/debian10/x86_64/ /" \
+# && add-apt-repository contrib \
+# && apt-get update \
+# && apt-get -y install cuda
+
+
+
+
+
+## Debugging libraries
+#RUN apt-get update \
+# && apt-get install -y \
+#    kmod \
+#    lsof \
+#    libstdc++6
+
+WORKDIR /home/$NB_USER/data 
+
+
+# clean cache files
+RUN rm -rf XDG_CACHE_HOME/*
+
+# remove the "work" folder since we're not using install
+RUN rm -rf /home/jovyan/work
+
+
