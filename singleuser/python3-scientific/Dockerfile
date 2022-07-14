@@ -1,15 +1,24 @@
 ARG BASE_VERSION
+
+
+# Collect dependencies from TauDEM image
+#FROM nlknguyen/alpine-mpich:latest as mpi
+FROM cuahsi/taudem:focal as taudem
+WORKDIR /tmp
+RUN ldd /usr/local/bin/pitremove | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
+RUN rm -rf /tmp/deps/lib64
+
+# Build the scientific image here
 FROM cuahsi/singleuser-base:$BASE_VERSION
 
-USER root
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
-
-USER $NB_UID
-
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+ENV GDAL_DATA=/opt/conda/share/gdal
+ENV PROJ_LIB=/opt/conda/share/proj
+
+USER root
+# copy TauDEM binaries
+COPY --from=taudem /usr/local/bin/ /usr/local/bin/
+USER $NB_UID
 
 #---------------
 # Conda packages
@@ -41,6 +50,7 @@ RUN mamba install -y \
 RUN mamba install -y \
     geopandas \
     gdal \
+    pygmt \
  && mamba clean --all -f -y 
 
 # Plotting
@@ -88,9 +98,7 @@ RUN pip install \
     tabulate \
     pynhd \
     jenkspy \
-    pyhydroqc 
-
-
+    pyhydroqc
 
 #-------------
 
@@ -99,26 +107,5 @@ RUN pip install \
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
     fix-permissions /home/$NB_USER
 
-USER root
-RUN apt update && apt install -y cmake \
-&& rm -rf /var/lib/apt/lists/*
-
-# install TauDEM
-ARG TAG=Develop
-RUN git clone --depth=1 --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
-&& mkdir -p /tmp/TauDEM/src/build \
-&& cd /tmp/TauDEM/src/build \
-&& cmake .. \
-&& make \
-&& mv /tmp/TauDEM/src/build/* /usr/local/bin \
-&& rm -rf /tmp/TauDEM
-
-# Set GDAL and Proj env vars. This is necessary to ensure gdal commands don't error out when the base
-# conda environment is not explicitly activated.
-# see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
-ENV GDAL_DATA=/opt/conda/share/gdal \
-    PROJ_LIB=/opt/conda/share/proj
-
 RUN rm -rf XDG_CACHE_HOME/*
 USER $NB_UID
-
