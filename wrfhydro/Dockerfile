@@ -4,7 +4,6 @@ ARG WRF_HYDRO_VERSION
 
 USER docker
 
-#ENV VERSION=v5.0.3
 
 # get the WRF-Hydro code
 RUN cd /tmp \
@@ -17,21 +16,22 @@ ADD setEnvar.sh /tmp/wrf_hydro_nwm_public/trunk/NDHMS
 
 # Build the code
 RUN cd /tmp/wrf_hydro_nwm_public/trunk/NDHMS \
-&& echo 2 | ./configure \
-&& ./compile_offline_NoahMP.sh setEnvar.sh \
-&& mkdir /home/docker/RUN  \
-&& cp Run/* /home/docker/RUN \ 
-&& mkdir /home/docker/RUN/FORCING \
-&& mkdir /home/docker/RUN/DOMAIN \
-&& mkdir /home/docker/RUN/OUTPUT 
-#&& rm -rf /tmp/*
+    && echo 2 | ./configure \
+    && ./compile_offline_NoahMP.sh setEnvar.sh \
+    && mkdir /home/docker/RUN  \
+    && cp Run/* /home/docker/RUN \ 
+    && mkdir /home/docker/RUN/FORCING \
+    && mkdir /home/docker/RUN/DOMAIN \
+    && mkdir /home/docker/RUN/OUTPUT \
+    && rm /home/docker/RUN/hydro.namelist \
+    && rm /home/docker/RUN/namelist.hrldas \
+    && rm -rf /tmp/*
 
-# add custom namelists
-COPY --chown=docker:docker hydro.namelist /home/docker/RUN
-COPY --chown=docker:docker namelist.hrldas /home/docker/RUN
+# add entry script
+COPY --chown=docker:docker entry.py /home/docker/RUN
 
 # add code directory
 WORKDIR /home/docker/RUN
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["python", "entry.py"]
 
