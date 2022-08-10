@@ -57,10 +57,10 @@ USER $NB_UID
 RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
-# install nbfetch, hstools
-RUN pip install hs_restclient hstools hsclient \
-  && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
-  && jupyter serverextension enable --py nbfetch --sys-prefix
+# install nbfetch, hstools, hsclient
+RUN pip install hs_restclient hstools hsclient==0.3.1 \
+  && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/aaraney/nbfetch@fix-overwrite-dialog \
+  && jupyter server extension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
   && conda clean --all -f -y
@@ -117,5 +117,9 @@ ENV DATA=${HOME}/downloads \
 
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
+
+#ARG REBUILD_HERE=yessir
+#RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/aaraney/nbfetch@fix-overwrite-dialog \
+    #  && jupyter server extension enable --py nbfetch --sys-prefix
 
 USER jovyan
