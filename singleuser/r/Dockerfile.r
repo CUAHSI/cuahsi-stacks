@@ -26,49 +26,40 @@ RUN apt-get update && \
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 USER $NB_USER
-USER jovyan
 
-#RUN mkdir $HOME/.userRLib \
-#&& echo "options(repos=structure(c(CRAN=\"http://archive.linux.duke.edu/cran\")))" >> $HOME/.Rprofile \
-
-#RUN conda config --add channels r \
-#&& conda config --add channels conda-forge 
-
-RUN conda install -y  --quiet \
+# Install r-base to pinned version first to make sure the
+# correct version is installed before adding dependencies.
+RUN mamba install -y  --quiet \
   --channel r \
   --channel conda-forge \
-  r-base=3.6.1 \
-  r-caret=6.0* \
-  r-crayon=1.3* \
-  r-devtools=2.0* \
-  r-forecast=8.7* \
-  r-hexbin=1.27* \
-  r-htmltools=0.3* \
-  r-htmlwidgets=1.3* \
-  r-irkernel=1.0* \
-  r-nycflights13=1.0* \
-  r-plyr=1.8* \
-  r-randomforest=4.6* \
-  r-rcurl=1.95* \
-  r-reshape2=1.4* \
-  r-rmarkdown=1.14* \
-  r-rodbc=1.3* \
-  r-rsqlite=2.1* \
-  r-shiny=1.3* \
-  r-sparklyr=1.0* \
-  r-tidyverse=1.2* \ 
-  unixodbc=2.3.* \
-  r-essentials \
-  r-xml \
-  r-rjsonio \
+  r-base=4.2.0 \
+&& conda clean --all -f -y \
+&& fix-permissions $CONDA_DIR
+
+RUN mamba install -y --quiet \
+  --channel r \
+  --channel conda-forge \
+  r-irkernel \
+  jupyter-rsession-proxy \
+  r-caret \
+  r-devtools \
+  r-forecast \
+  r-rgdal \
+  r-randomforest \
   r-ncdf4 \
+  r-essentials \
   r-sf \
-  r-ggmap \
+  r-sparklyr \
+  r-tidyverse \ 
+  r-rmarkdown \
+  r-rjsonio \
   r-mapdata \
   r-gridextra \
-  nbrsessionproxy \
-  r-e1071 \
-  r-rgdal \
+  r-ggmap \
+  r-rsqlite \
+  r-hexbin \
+  r-htmlwidgets \
+  r-plyr \
 && conda clean --all -f -y \
 && fix-permissions $CONDA_DIR
 
