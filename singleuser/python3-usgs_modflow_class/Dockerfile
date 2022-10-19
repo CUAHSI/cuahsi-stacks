@@ -5,15 +5,18 @@ USER root
 RUN sudo apt install ca-certificates
 
 RUN apt-get update && \
-    rm -rf /var/lib/apt/lists/*
+    apt install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-USER $NB_UID
 
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
 # get the class materials
 RUN git clone --depth 1 https://github.com/DOI-USGS/python-for-hydrology.git /opt/python_class \
         && chmod -R 777 /opt/python_class
+
+USER $NB_UID
 
 # build the environment
 RUN mamba env create -vf /opt/python_class/installation/environment.yml

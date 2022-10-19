@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 
-docker build -t cuahsi/singleuser-modflow-iah:2021.08.03 .
+docker build -t cuahsi/singleuser-usgs-flowpy:2022.10.24 .
 
