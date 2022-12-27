@@ -6,7 +6,7 @@ FROM cuahsi/singleuser-scientific-r:$BASE_VERSION
 USER $NB_UID
 
 # Install python libraries
-RUN conda install -y --quiet \
+RUN mamba install -y --quiet \
 numpy \
 matplotlib \
 scipy \
@@ -19,7 +19,7 @@ graphviz \
 && fix-permissions $CONDA_DIR
 
 # Install R libraries
-RUN conda install -y  --quiet \
+RUN mamba install -y  --quiet \
 r-base=3.6.1 \
 r-shiny=1.3* \
 r-plyr=1.8* \
@@ -43,7 +43,7 @@ graphviz \
 && rm -rf /var/lib/apt/lists/*
 USER $NB_UID
 
-RUN conda install -y --quiet \
+RUN mamba install -y --quiet \
 graphviz \
 pydot \
 configparser \
