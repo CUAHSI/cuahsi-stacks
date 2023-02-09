@@ -33,5 +33,8 @@ COPY --chown=docker:docker entry.py /home/docker/RUN
 # add code directory
 WORKDIR /home/docker/RUN
 
+# this is a hack to allow copying output files to the volume mount
+USER root
+
 ENTRYPOINT ["python", "entry.py"]
 

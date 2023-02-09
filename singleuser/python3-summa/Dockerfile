@@ -8,6 +8,7 @@ RUN apt-get update && \
     git \
     make \
     gfortran \
+    libgfortran4 \
     libnetcdff-dev \
     liblapack-dev \
     vim \
@@ -39,20 +40,22 @@ RUN cd /code/build \
 RUN pip install nbresuse==0.3.3 \
 && jupyter labextension install jupyterlab-topbar-extension jupyterlab-system-monitor
 
-# conda installations
-RUN conda install -c conda-forge -y \
- descartes \
- metsim \
- mizuroute \
- cartopy \
- seaborn \
- scikit-learn \
- rasterio \
- gdal \
- pysumma=3.0.3 \
- && conda clean --all -f -y
+USER root
 
-# clean up
-RUN rm -rf /code /home/jovyan/work
-    
-USER $NB_UID
+## conda installations
+#RUN mamba install -c conda-forge -y \
+# descartes \
+# metsim \
+# mizuroute \
+# cartopy \
+# seaborn \
+# scikit-learn \
+# rasterio \
+# gdal \
+# pysumma \
+# && conda clean --all -f -y
+#
+## clean up
+#RUN rm -rf /code /home/jovyan/work
+#    
+#USER $NB_UID

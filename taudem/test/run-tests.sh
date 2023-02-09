@@ -10,9 +10,13 @@ if [ $# -eq 0 ]
 fi
 IMAGE=$1
 
-docker run --rm -u root -ti -v $(pwd)/setup.sh:/tmp/setup.sh -v $(pwd)/tests.sh:/tmp/tests.sh $IMAGE 
-#\
-#/bin/bash -c "cd /tmp; ./prepare-test-env.sh; cd /tmp/Input; ./taudem-tests.sh"
+docker run --rm -u root -ti \
+    -v $(pwd)/setup.sh:/tmp/setup.sh \
+    -v $(pwd)/tests.sh:/tmp/tests.sh \
+    --entrypoint /bin/bash \
+    $IMAGE
+#    -c 'cd /tmp && ./setup.sh'
+
 
 
 

@@ -61,7 +61,6 @@ if __name__ == "__main__":
     success = wrfhydro.execute()
     if not success:
         print(f"Error encountered during model simulation")
-        sys.exit(1)
 
     wrfhydro.clean()
     print('WRF-HYDRO SIMULATION COMPLETE')

@@ -40,7 +40,7 @@ ENV GDAL_DATA=/opt/conda/share/gdal \
 ## quick update of ipykernel
 RUN pip install --upgrade ipykernel
 
-COPY setup_files.py /home/jovyan/setup_files.py
+COPY setup_files.py /opt/setup_files.py
 
 # get the MODFLOW binaries
 RUN curl -L -o linux.zip https://github.com/MODFLOW-USGS/executables/releases/latest/download/linux.zip?raw=true \
@@ -55,7 +55,7 @@ ENV PATH="/home/jovyan/binaries:${PATH}"
 
 RUN echo "source activate pyclass" > ~/.bashrc
 
-ENV PATH /opt/conda/envs/pyclass/bin:$PATH
+#ENV PATH /opt/conda/envs/pyclass/bin:$PATH
 
 RUN rm -rf XDG_CACHE_HOME/*
 

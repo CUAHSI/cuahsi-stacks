@@ -11,9 +11,9 @@ except:
     print('could not update from git!')
 os.chdir(cdir)
 try:
-    if os.path.exists('./data/python_class'):
-    	shutil.rmtree('./data/python_class')
-    shutil.copytree(orgdir,'./data/python_class')
-    print('Copied all class materials to /home/jovyan/data')
+    if os.path.exists('/home/jovyan/data/python-for-hydrology'):
+        shutil.rmtree('/home/jovyan/data/python-for-hydrology')
+    shutil.copytree(orgdir,'/home/jovyan/data/python-for-hydrology')
+    print('Copied all class materials to /home/jovyan/data/python-for-hydrology')
 except:
     raise('could not copy class materials')

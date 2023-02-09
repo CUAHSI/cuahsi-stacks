@@ -40,6 +40,11 @@ USER $NB_UID
     #    cudatoolkit \
     #    cudnn
 
+RUN rm /opt/conda/conda-meta/pinned \
+ && touch /opt/conda/conda-meta/pinned
+
+RUN mamba install -y \
+    python=3.7 
 
 # Numerical
 RUN mamba install -y \
@@ -50,7 +55,7 @@ RUN mamba install -y \
     dask \
     dill \
     nb_conda_kernels \
-    numpy \
+    "numpy<=1.22" \
     pandas \
     scipy \
     scikit-learn \
@@ -73,6 +78,13 @@ RUN pip install \
     hsclient \ 
     hstools \
     tensorboard
+
+# install chaopeng's tool 
+RUN pip install -U pip \
+ && pip install pyproj \
+ && git clone https://github.com/mhpi/hydroDL.git /tmp/hydrodl \
+ && cd /tmp/hydrodl \
+ && python setup.py install 
 
 ## https://stackoverflow.com/questions/55152948/juypter-notebook-shows-blank-page
 #RUN pip install --update notebook
@@ -121,6 +133,9 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 #    kmod \
 #    lsof \
 #    libstdc++6
+
+
+RUN jupyter lab build
 
 WORKDIR /home/$NB_USER/data 
 

@@ -18,6 +18,23 @@ services:
           Base JupyterHub image from which all other CUAHSI singleuser environments are created. Built using jupyterhub/singleuser:${JH_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-base:${CUAHSI_BASE}
   
+  ###################
+  # Base Python 3.7 #
+  ###################
+  base-py37:
+    env_file:
+      - '.env'
+    build: 
+      context: ./base
+      dockerfile: Dockerfile.base.py37
+      args:
+        # JupyterHub/singleuser version to use as base
+        BASE_VERSION: ${JH_BASE}
+      labels:
+        description: |
+          Base JupyterHub image from which all other CUAHSI singleuser environments are created. Built using jupyterhub/singleuser:${JH_BASE} on ${BUILD_DATE}.
+    image: cuahsi/singleuser-base-py3.7:${CUAHSI_BASE}
+  
   #################
   # Base CentOS 7 #
   #################
@@ -238,3 +255,17 @@ services:
         description: |
           Environment configured to run MODFLOW for the 2021 IAH conference. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: cuahsi/singleuser-modflow:${BUILD_DATE}
+  
+  ###################
+  #  EDU - Gerbrand #
+  ###################
+  gerbrand:
+    env_file:
+      - '.env'
+    build:
+      context: ./gerbrand
+      dockerfile: Dockerfile
+      args:
+        # image version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+    image: cuahsi/singleuser-edu:${BUILD_DATE}
