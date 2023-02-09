@@ -1,0 +1,103 @@
+FROM continuumio/miniconda3:4.10.3-alpine
+
+RUN conda config --add channels anaconda \
+ && conda config --add channels conda-forge \
+ && conda install -y \
+    mamba \
+ && conda clean --all -f -y
+
+# Core
+RUN mamba install -y \
+    python-wget \
+    requests \
+    requests-toolbelt \
+    requests-oauthlib \
+    beautifulsoup4 \
+    dask \
+    dill \
+    nb_conda_kernels \
+    jupyter-server-proxy \
+ && mamba clean --all -f -y 
+
+# Numerical
+RUN mamba install -y \
+    numpy \
+    pandas \
+    scipy \
+    scikit-learn \
+    scikit-image \
+    sympy \
+    numexpr \
+    openblas \
+ && mamba clean --all -f -y 
+
+# Geospatial
+RUN mamba install -y \
+    geopandas \
+    gdal \
+ && mamba clean --all -f -y 
+
+# Plotting
+RUN mamba install -y \
+    graphviz \
+    matplotlib \
+    seaborn \
+    basemap-data-hires \
+    bokeh \
+    rasterio \
+    rasterstats \
+ && mamba clean --all -f -y 
+
+# Statistics
+RUN mamba install -y \
+    statsmodels \
+    patsy \
+ && mamba clean --all -f -y 
+
+# Data - Conda
+RUN mamba install -y \
+    netcdf4 \
+    h5py \
+    geemap \
+ && mamba clean --all -f -y 
+
+## ML Libraries
+RUN mamba install -y \
+    pytorch \
+    cudatoolkit \
+    hdf5 \
+    numba \
+    pytest \
+    pytest-cov \
+    ruamel.yaml \
+    sphinx \
+    tqdm  \
+    yapf \
+ && mamba clean --all -f -y 
+
+RUN pip install \
+	tensorboard \
+	sphinx-rtd-theme \
+	nbsphinx \
+	nbsphinx-link \
+	hs_restclient \
+	hstools \
+	hsclient \
+	nbserverproxy \
+	nbresuse \
+	hydroshare_on_jupyter \
+	ulmo \
+	pynhd \
+	dataretrieval \
+	tabulate \
+	pyhydroqc \
+	hydrotools
+
+RUN mamba install -y \
+    nodejs \
+    dask-labextension \
+    earthengine-api \
+ && mamba clean --all -f -y 
+
+
+RUN conda config --append envs_dirs /home/jovyan/data/conda-envs

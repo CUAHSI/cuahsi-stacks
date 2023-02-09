@@ -1,6 +1,5 @@
 ARG BASE_VERSION
 FROM cuahsi/singleuser-base:$BASE_VERSION
-#FROM cuahsi/singleuser-base:2022.08.09
 
 USER $NB_UID
 
@@ -22,6 +21,7 @@ pymt_ecsimplesnow==0.2.6 \
 pymt_gipl==0.1.1 \
 pymt_rafem==0.1.4 \
 && mamba clean --all -f -y
+
 
 # data component
 RUN mamba install -y \

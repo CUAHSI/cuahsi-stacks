@@ -17,7 +17,7 @@ USER root
 
 RUN pip install wrfhydropy
 
-RUN conda install --quiet -y \
+RUN mamba install --quiet -y \
 jupyterlab \
 jupyter_contrib_nbextensions \
 boltons \
