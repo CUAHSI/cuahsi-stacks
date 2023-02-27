@@ -22,6 +22,10 @@ pymt_gipl==0.1.1 \
 pymt_rafem==0.1.4 \
 && mamba clean --all -f -y
 
+# upgrade pyopenssl to fix an issue that is preventing
+# nbfetch from loading correctly.
+RUN mamba upgrade pyopenssl -y
+
 
 # data component
 RUN mamba install -y \
@@ -67,6 +71,7 @@ USER root
 # see https://gis.stackexchange.com/questions/326968/ogr2ogr-error-1-proj-pj-obj-create-cannot-find-proj-db
 ENV GDAL_DATA=/opt/conda/share/gdal \
     PROJ_LIB=/opt/conda/share/proj
+
 
 RUN rm -rf XDG_CACHE_HOME/* \
 USER $NB_UID
