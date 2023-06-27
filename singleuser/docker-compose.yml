@@ -136,7 +136,7 @@ services:
   ####################
   # WRF-Hydro v5.0.3 #
   ####################
-  wrfhydro:
+  wrfhydro-5.0.3:
     env_file:
       - '.env'
     build:
