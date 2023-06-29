@@ -50,7 +50,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
-          path: ${IMAGE_ROOT}
+          path: $IMAGE_ROOT
 
       - name: Echo env configuration and set image tag
         id: tagging
@@ -84,7 +84,7 @@ jobs:
       # TODO: eventually loop on image variant to build other services...
       - name: Build
         run: |
-          cd ${IMAGE_ROOT}
+          cd $IMAGE_ROOT
           docker compose build ${{ matrix.IMAGE_VARIANT }}
 
       # TODO Push the Docker image to Google Artifact Registry
