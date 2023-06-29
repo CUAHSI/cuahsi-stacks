@@ -3,11 +3,14 @@ name: Build and Push to Google Artifact Registry
 
 # TODO update env for G Artifact Registry project
 env:
-  GITHUB_SHA: ${{ github.sha }} 
+  GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
   IMAGE_ROOT: singleuser
   # TODO: eventually loop on image variant to build other services...
-  IMAGE_VARIANT: base
+  # IMAGE_VARIANT: base
+  # periodically build a core set: base, scientific, r, summa, wrfhydro, csdms
+  # other envs on the JH launch page should also build periodically
+  # maybe all the others: we just build them and make sure they succeed but don't publih? or push to dockerhub
   REGISTRY_HOSTNAME: gcr.io
   PROJECT_ID: cuahsi-stacks-proj-id
   HOST_REGION: us-east4-docker.pkg.dev
@@ -18,67 +21,75 @@ on:
     # TODO: build periodically? or on tag?
     # tags:
     #   - *
-    branches: [ gh-actions-build ]
+    branches: [gh-actions-build]
     paths:
       - "singleuser/**"
       - ".github/workflows/**"
 
 # Environment variables available to all jobs and steps in this workflow
-#  GKE_KEY: ${{ secrets.GKE_KEY }} 
-
+#  GKE_KEY: ${{ secrets.GKE_KEY }}
 
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 6
+      matrix:
+        IMAGE_VARIANT:
+          - base
+          - scientific
+          - r
+          - summa
+          - wrfhydro
+          - csdms
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checkout
-      uses: actions/checkout@v2
-    
-    - name: Load .env file
-      uses: xom9ikk/dotenv@v2
-      with:
-        path: singleuser
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: singleuser
 
-    - name: Echo env configuration and set image tag
-      id: tagging
-      run: |
-        echo "JH_BASE: ${{ env.JH_BASE }}"
-        echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
-        echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
-        echo ------------
-        # export DOCKER_FULL_PATH="singleuser-base-${{ env.BUILD_DATE }}-$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}"
-        export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${IMAGE_VARIANT}:${{ env.CUAHSI_BASE }}"
-        echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-        echo $DOCKER_FULL_PATH
+      - name: Echo env configuration and set image tag
+        id: tagging
+        run: |
+          echo "JH_BASE: ${{ env.JH_BASE }}"
+          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo ------------
+          # export DOCKER_FULL_PATH="singleuser-base-${{ env.BUILD_DATE }}-$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}"
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+          echo $DOCKER_FULL_PATH
 
+      # TODO: enable google auth and add secrets to GH
+      # - id: 'auth'
+      #   uses: 'google-github-actions/auth@v1'
+      #   with:
+      #     credentials_json: '${{ secrets.GKE_KEY }}'
 
-    # TODO: enable google auth and add secrets to GH
-    # - id: 'auth'
-    #   uses: 'google-github-actions/auth@v1'
-    #   with:
-    #     credentials_json: '${{ secrets.GKE_KEY }}'
+      # - name: 'Set up Cloud SDK'
+      #   uses: 'google-github-actions/setup-gcloud@v1'
 
-    # - name: 'Set up Cloud SDK'
-    #   uses: 'google-github-actions/setup-gcloud@v1'
+      # Configure docker to use the gcloud command-line tool as a credential helper
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker us-east4-docker.pkg.dev
 
+      # Build the Docker image
+      # TODO: eventually loop on image variant to build other services...
+      - name: Build
+        run: |
+          cd singleuser
+          docker compose build ${{ matrix.IMAGE_VARIANT }}
 
-    # Configure docker to use the gcloud command-line tool as a credential helper
-    - run: |
-        # Set up docker to authenticate
-        # via gcloud command-line tool.
-        gcloud auth configure-docker --quiet
-        gcloud auth configure-docker us-east4-docker.pkg.dev
+      # TODO Push the Docker image to Google Artifact Registry
+      - name: Push Docker Image to Artifact Registry
+        run: |
+          docker push $HOST_REGION/$PROJECT_ID/${{ env.DOCKER_FULL_PATH }}
 
-    # Build the Docker image
-    # TODO: eventually loop on image variant to build other services...
-    - name: Build
-      run: |
-        cd singleuser
-        docker compose build $IMAGE_VARIANT
-    
-    # TODO Push the Docker image to Google Artifact Registry
-    - name: Push Docker Image to Artifact Registry
-      run: |
-        docker push $HOST_REGION/$PROJECT_ID/${{ env.DOCKER_FULL_PATH }}
+    # TODO: run tests?
