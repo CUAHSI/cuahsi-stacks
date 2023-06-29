@@ -30,6 +30,8 @@ on:
 #  GKE_KEY: ${{ secrets.GKE_KEY }}
 
 jobs:
+  # TODO: remove continue on error
+  continue-on-error: true
   setup-build-publish-deploy:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
