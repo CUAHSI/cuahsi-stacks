@@ -7,6 +7,7 @@ FROM cuahsi/taudem:focal as taudem
 WORKDIR /tmp
 RUN ldd /usr/local/bin/pitremove | tr -s '[:blank:]' '\n' | grep '^/' |  xargs -I % sh -c 'mkdir -p $(dirname deps%); cp % deps%;'
 RUN rm -rf /tmp/deps/lib64
+# TEST!
 
 # Build the scientific image here
 FROM cuahsi/singleuser-base:$BASE_VERSION
