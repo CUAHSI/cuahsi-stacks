@@ -3,6 +3,7 @@ ARG BASE_VERSION
 
 FROM jupyter/minimal-notebook:ubuntu-20.04
 #FROM rocker/binder:4.2
+# TEST!
 
 # install rstudio-server
 USER root
