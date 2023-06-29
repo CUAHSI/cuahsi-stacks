@@ -14,6 +14,7 @@ ENV XDG_CACHE_HOME=/home/$NB_USER/.cache/ \
     VERSION=$MODEL_VERSION
 
 USER root
+# TEST
 
 RUN pip install wrfhydropy
 
