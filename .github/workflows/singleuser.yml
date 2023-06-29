@@ -23,7 +23,7 @@ on:
     #   - *
     branches: [gh-actions-build]
     paths:
-      - "singleuser/**"
+      - "${IMAGE_ROOT}/**"
       - ".github/workflows/**"
 
 # Environment variables available to all jobs and steps in this workflow
@@ -34,6 +34,7 @@ jobs:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
     strategy:
+      continue-on-error: true
       max-parallel: 6
       matrix:
         IMAGE_VARIANT:
@@ -50,7 +51,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
-          path: singleuser
+          path: ${IMAGE_ROOT}
 
       - name: Echo env configuration and set image tag
         id: tagging
@@ -84,7 +85,7 @@ jobs:
       # TODO: eventually loop on image variant to build other services...
       - name: Build
         run: |
-          cd singleuser
+          cd ${IMAGE_ROOT}
           docker compose build ${{ matrix.IMAGE_VARIANT }}
 
       # TODO Push the Docker image to Google Artifact Registry
