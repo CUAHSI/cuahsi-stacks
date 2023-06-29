@@ -1,11 +1,16 @@
-name: Build and Push to GCR
+name: Build and Push to Google Artifact Registry
+# Adapted from http://acaird.github.io/computers/2020/02/11/github-google-container-cloud-run
+
 
 on:
   push:
+    # TODO: build periodically? or on tag?
     # tags:
     #   - *
-    # TODO: run on tag publish
     branches: [ gh-actions-build ]
+    paths:
+      - "singleuser/**"
+      - ".github/workflows/**"
 
 # Environment variables available to all jobs and steps in this workflow
 #  GKE_KEY: ${{ secrets.GKE_KEY }} 
@@ -14,11 +19,11 @@ on:
 env:
   GITHUB_SHA: ${{ github.sha }} 
   GITHUB_REF: ${{ github.ref }} 
-  IMAGE: dendra-web-ui
+  IMAGE: singleuser-base
   REGISTRY_HOSTNAME: gcr.io
   PROJECT_ID: cuahsi-stacks-proj-id
   HOST_REGION: us-east4-docker.pkg.dev
-  REPOSITORY: cuahsi-stacks-repo
+  REPOSITORY: cuahsi
 
 
 jobs:
@@ -30,6 +35,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     
+    - name: Load .env file
+      uses: xom9ikk/dotenv@v2
+      with:
+        path: singleuser
+
+    - name: Echo env configuration and set image tag
+      id: tagging
+      run: |
+        echo "JH_BASE: ${{ env.JH_BASE }}"
+        echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+        echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+        echo ------------
+        # export DOCKER_FULL_PATH="singleuser-base-${{ env.BUILD_DATE }}-$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}"
+        export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE}:${{ env.CUAHSI_BASE }}"
+        echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+        echo $DOCKER_FULL_PATH
+
+
     # TODO: enable google auth and add secrets to GH
     # - id: 'auth'
     #   uses: 'google-github-actions/auth@v1'
@@ -48,40 +71,13 @@ jobs:
         gcloud auth configure-docker us-east4-docker.pkg.dev
 
     # Build the Docker image
-    # - name: Build
-    #   run: |
-    #     export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
-    #     echo $TAG
-    #     docker build -t $IMAGE:latest \
-    #       --build-arg GITHUB_SHA="$GITHUB_SHA" \
-    #       --build-arg GITHUB_REF="$GITHUB_REF" \
-    #       -f Dockerfile-cuahsi .
-
     # TODO: eventually we will build other services...
     - name: Build
       run: |
         cd singleuser
-        export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
-        echo $TAG
         docker compose build base
-
-
-    # Push the Docker image to Google Container Registry
-    # - name: Publish
-    #   run: |
-    #     export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
-    #     echo $TAG
-    #     docker tag $IMAGE:latest $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:latest
-    #     docker tag $IMAGE:latest $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:$TAG
-    #     docker push $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:latest
-    #     docker push $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:$TAG
     
     # TODO Push the Docker image to Google Artifact Registry
-    # - name: Push Docker Image to Artifact Registry
-    #   run: |
-    #     export TAG=`echo $GITHUB_REF | awk -F/ '{print $NF}'`
-    #     echo $TAG
-    #     docker tag $IMAGE:latest $HOST_REGION/$PROJECT_ID/$REPOSITORY/$IMAGE:latest
-    #     docker tag $IMAGE:latest $HOST_REGION/$PROJECT_ID/$REPOSITORY/$IMAGE:$TAG
-    #     docker push $HOST_REGION/$PROJECT_ID/$REPOSITORY/$IMAGE:latest
-    #     docker push $HOST_REGION/$PROJECT_ID/$REPOSITORY/$IMAGE:$TAG
+    - name: Push Docker Image to Artifact Registry
+      run: |
+        docker push $HOST_REGION/$PROJECT_ID/${{ env.DOCKER_FULL_PATH }}
