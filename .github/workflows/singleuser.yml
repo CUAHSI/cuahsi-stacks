@@ -50,7 +50,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
-          path: "${IMAGE_ROOT}"
+          path: ${{ env.IMAGE_ROOT }}
 
       - name: Echo env configuration and set image tag
         id: tagging
