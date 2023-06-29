@@ -17,30 +17,14 @@ env:
   REPOSITORY: cuahsi
 
 on:
-  push:
-    paths:
-      - "singleuser/**"
+  schedule:
+    - cron: '0 0 * * 0'  # At 00:00 every Sunday
 
 # Environment variables available to all jobs and steps in this workflow
 #  GKE_KEY: ${{ secrets.GKE_KEY }}
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      # Expose matched filters as job 'variants' output variable
-      image_variants: ${{ steps.filter.outputs.changes }}
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          base: singleuser/base/**
-          scientific: singleuser/python3-scientific/**
-          r: singleuser/r/**
   setup-build-publish-deploy:
-    needs: changes
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
     # TODO: remove continue on error
@@ -48,7 +32,13 @@ jobs:
     strategy:
       max-parallel: 6
       matrix:
-        IMAGE_VARIANT: ${{ fromJSON(needs.changes.outputs.image_variants) }}
+        IMAGE_VARIANT:
+          - base
+          - scientific
+          - r
+          - summa
+          - wrfhydro
+          - csdms
     steps:
       - name: Checkout
         uses: actions/checkout@v2
