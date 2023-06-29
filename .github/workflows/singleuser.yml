@@ -18,9 +18,8 @@ env:
 
 on:
   push:
-    # TODO: build periodically? or on tag?
-    # tags:
-    #   - *
+    schedule:
+    - cron: "0 1 * * 7"
     branches: [gh-actions-build]
     paths:
       - "${IMAGE_ROOT}/**"
