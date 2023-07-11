@@ -8,7 +8,8 @@ env:
   REGISTRY_HOSTNAME: docker.io
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  REPOSITORY: cuahsi
+  # TODO: repo should be "cuahsi", hydroshare used for demonstration
+  REPOSITORY: hydroshare
 
 on: push
 
