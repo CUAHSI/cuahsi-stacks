@@ -65,7 +65,7 @@ jobs:
       
       - name: Docker Login
         run: |
-          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USER --password-stdin
 
       # Build the Docker image
       - name: Build
