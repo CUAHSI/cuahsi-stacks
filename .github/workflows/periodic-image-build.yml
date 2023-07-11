@@ -1,10 +1,6 @@
 name: Periodically Build and Publish to Google Artifact Registry
-# Adapted from http://acaird.github.io/computers/2020/02/11/github-google-container-cloud-run
 
-# TODO update env for CUAHSI
 env:
-  GITHUB_SHA: ${{ github.sha }}
-  GITHUB_REF: ${{ github.ref }}
   IMAGE_ROOT: singleuser
   REGISTRY_HOSTNAME: docker.io
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
@@ -56,13 +52,14 @@ jobs:
           echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
           echo ------------
-          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          export DOCKER_FULL_PATH="$DOCKER_TAG-periodic-$(date +'%Y.%m.%d')"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
-          docker tag ${{ env.DOCKER_FULL_PATH }} ${{ env.DOCKER_FULL_PATH }}-periodic-$(date +'%Y-%m-%d')
+          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
 
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKER_FULL_PATH }}-periodic-$(date +'%Y-%m-%d')
+          docker push $DOCKER_FULL_PATH
 
     # TODO: run tests?

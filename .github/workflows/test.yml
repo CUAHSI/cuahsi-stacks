@@ -3,7 +3,7 @@ name: Test build
 # TODO remove test yaml
 env:
   GITHUB_SHA: ${{ github.sha }}
-  GITHUB_REF: ${{ github.ref }}
+  GITHUB_REF: ${{ github.ref_name }}
   IMAGE_ROOT: singleuser
   REGISTRY_HOSTNAME: docker.io
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
@@ -41,7 +41,6 @@ jobs:
         run: |
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
-          docker image ls
 
       - name: Echo env configuration and set image tag
         id: tagging
@@ -50,12 +49,13 @@ jobs:
           echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
           echo ------------
-          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          export DOCKER_FULL_PATH="$DOCKER_TAG-test-$GITHUB_SHA"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
-          docker tag ${{ env.DOCKER_FULL_PATH }} ${{ env.DOCKER_FULL_PATH }}-test-$(date +'%Y-%m-%d')
+          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
 
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKER_FULL_PATH }}-test-$(date +'%Y-%m-%d')
+          docker push $DOCKER_FULL_PATH
 
