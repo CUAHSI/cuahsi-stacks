@@ -1,23 +1,20 @@
 name: Build and Publish to Google Artifact Registry on Github push
 # Adapted from http://acaird.github.io/computers/2020/02/11/github-google-container-cloud-run
 
-# TODO update env for G Artifact Registry project
+# TODO update env for CUAHSI
 env:
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
   IMAGE_ROOT: singleuser
-  REGISTRY_HOSTNAME: gcr.io
-  PROJECT_ID: cuahsi-stacks-proj-id
-  HOST_REGION: us-east4-docker.pkg.dev
+  REGISTRY_HOSTNAME: docker.io
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   REPOSITORY: cuahsi
 
 on:
   push:
     paths:
       - "singleuser/**"
-
-# Environment variables available to all jobs and steps in this workflow
-#  GKE_KEY: ${{ secrets.GKE_KEY }}
 
 jobs:
   detect-changes:
@@ -62,37 +59,23 @@ jobs:
           echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
           echo ------------
-          # export DOCKER_FULL_PATH="singleuser-base-${{ env.BUILD_DATE }}-$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}"
           export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
-
-      # TODO: enable google auth and add secrets to GH
-      # - id: 'auth'
-      #   uses: 'google-github-actions/auth@v1'
-      #   with:
-      #     credentials_json: '${{ secrets.GKE_KEY }}'
-
-      # - name: 'Set up Cloud SDK'
-      #   uses: 'google-github-actions/setup-gcloud@v1'
-
-      # Configure docker to use the gcloud command-line tool as a credential helper
-      - run: |
-          # Set up docker to authenticate
-          # via gcloud command-line tool.
-          gcloud auth configure-docker --quiet
-          gcloud auth configure-docker $HOST_REGION
+      
+      - name: Docker Login
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       # Build the Docker image
-      # TODO: eventually loop on image variant to build other services...
       - name: Build
         run: |
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
+          docker image ls
 
-      # TODO Push the Docker image to Google Artifact Registry
-      # - name: Push Docker Image to Artifact Registry
-      #   run: |
-      #     docker push $HOST_REGION/$PROJECT_ID/${{ env.DOCKER_FULL_PATH }}
+      - name: Push Docker Image
+        run: |
+          docker push ${{ env.DOCKER_FULL_PATH }}
 
     # TODO: run tests?

@@ -1,7 +1,6 @@
-name: Periodically Build and Publish to Google Artifact Registry
-# Adapted from http://acaird.github.io/computers/2020/02/11/github-google-container-cloud-run
+name: Test build
 
-# TODO update env for CUAHSI
+# TODO remove test yaml
 env:
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
@@ -11,25 +10,19 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   REPOSITORY: cuahsi
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'  # At 00:00 every Sunday
+on: push
 
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       max-parallel: 6
       # select a core set of images to build
       matrix:
         IMAGE_VARIANT:
-          - base
-          - scientific
-          - r
-          - summa
-          - wrfhydro
-          - csdms
+          - test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -59,9 +52,9 @@ jobs:
         run: |
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
+          docker image ls
 
       - name: Push Docker Image
         run: |
           docker push ${{ env.DOCKER_FULL_PATH }}
 
-    # TODO: run tests?
