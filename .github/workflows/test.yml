@@ -8,8 +8,7 @@ env:
   REGISTRY_HOSTNAME: docker.io
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  # TODO: repo should be "cuahsi", hydroshare used for demonstration
-  REPOSITORY: hydroshare
+  REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
 
 on: push
 
@@ -32,17 +31,6 @@ jobs:
         uses: xom9ikk/dotenv@v2
         with:
           path: ${{ env.IMAGE_ROOT }}
-
-      - name: Echo env configuration and set image tag
-        id: tagging
-        run: |
-          echo "JH_BASE: ${{ env.JH_BASE }}"
-          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
-          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
-          echo ------------
-          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-          echo $DOCKER_FULL_PATH
       
       - name: Docker Login
         run: |
@@ -55,7 +43,19 @@ jobs:
           docker compose build ${{ matrix.IMAGE_VARIANT }}
           docker image ls
 
+      - name: Echo env configuration and set image tag
+        id: tagging
+        run: |
+          echo "JH_BASE: ${{ env.JH_BASE }}"
+          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo ------------
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+          echo $DOCKER_FULL_PATH
+          docker tag ${{ env.DOCKER_FULL_PATH }} ${{ env.DOCKER_FULL_PATH }}-test-$(date +'%Y-%m-%d')
+
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKER_FULL_PATH }}
+          docker push ${{ env.DOCKER_FULL_PATH }}-test-$(date +'%Y-%m-%d')
 

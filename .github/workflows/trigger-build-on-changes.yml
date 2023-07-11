@@ -9,7 +9,7 @@ env:
   REGISTRY_HOSTNAME: docker.io
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  REPOSITORY: cuahsi
+  REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
 
 on:
   push:
