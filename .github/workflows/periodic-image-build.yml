@@ -12,9 +12,6 @@ on:
     - cron: '0 0 * * 0'  # At 00:00 every Sunday
 
   workflow_dispatch:
-    inputs:
-      stacks-ref:
-        description: 'Ref to use from cuahsi-stacks'
 
 jobs:
   setup-build-publish-deploy:
@@ -35,13 +32,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        if: github.event.inputs.stacks-ref == ''
+        if: ${{ github.event.action }} != 'workflow_dispatch'
       
-      - name: Checkout, ref = ${{ github.event.inputs.stacks-ref }}
+      - name: Checkout, ref = ${{ github.ref_name }}
         uses: actions/checkout@v2
-        if: github.event.inputs.stacks-ref != ''
+        if: ${{ github.event.action }} == 'workflow_dispatch'
         with:
-          ref: ${{ github.event.inputs.stacks-ref }}
+          ref: ${{ github.ref_name }}
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
