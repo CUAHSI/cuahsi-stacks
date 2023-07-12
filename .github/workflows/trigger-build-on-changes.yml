@@ -1,4 +1,4 @@
-name: Build and Publish to Google Artifact Registry on Github push
+name: Build and Publish to Registry on Github push
 
 env:
   GITHUB_SHA: ${{ github.sha }}
@@ -36,6 +36,7 @@ jobs:
     needs: detect-changes
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       max-parallel: 6
       matrix:

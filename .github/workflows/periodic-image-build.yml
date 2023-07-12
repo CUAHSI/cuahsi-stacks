@@ -1,4 +1,4 @@
-name: Periodically Build and Publish to Google Artifact Registry
+name: Periodically Build and Publish to Registry
 
 env:
   IMAGE_ROOT: singleuser
@@ -11,10 +11,16 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # At 00:00 every Sunday
 
+  workflow_dispatch:
+    inputs:
+      stacks-ref:
+        description: 'Ref to use from cuahsi-stacks'
+
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, and Publish
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       max-parallel: 6
       # select a core set of images to build
@@ -29,6 +35,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        if: github.event.inputs.stacks-ref == ''
+      
+      - name: Checkout, ref = ${{ github.event.inputs.stacks-ref }}
+        uses: actions/checkout@v2
+        if: github.event.inputs.stacks-ref != ''
+        with:
+          ref: ${{ github.event.inputs.stacks-ref }}
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
