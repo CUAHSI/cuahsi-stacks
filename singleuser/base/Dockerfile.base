@@ -3,10 +3,10 @@
 ARG BASE_VERSION
 FROM jupyterhub/singleuser:$BASE_VERSION
 
-MAINTAINER Tony Castronova <acastronova@cuahsi.org>
+LABEL maintainer='Tony Castronova <acastronova@cuahsi.org>'
 
+# BEGIN - ROOT - ROOT - ROOT - ROOT
 USER root
-
 # install system libs
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt update && apt install -y --no-install-recommends \
@@ -23,33 +23,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   texlive-xetex \
   texlive-latex-recommended \
   && rm -rf /var/lib/apt/lists/*
-
-
-# install icommands using pattern documented in: 
-# https://github.com/irods/irods/issues/4883
-
-# prepare iRODs APT repository
-ARG LSB_RELEASE="bionic" # Using bionic repos because focal is not available
-RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key add - \
-  && echo "deb [arch=amd64] https://packages.irods.org/apt/ ${LSB_RELEASE} main" | sudo tee /etc/apt/sources.list.d/renci-irods.list  \
-  && apt-get update 
-
-# install iRODs dependencies
-RUN wget -c \
-    http://security.ubuntu.com/ubuntu/pool/main/p/python-urllib3/python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
-  http://security.ubuntu.com/ubuntu/pool/main/r/requests/python-requests_2.18.4-2ubuntu0.1_all.deb \
-  http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.8_amd64.deb \
-  && apt install -y \
-  ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
-  ./python-requests_2.18.4-2ubuntu0.1_all.deb \
-  ./libssl1.0.0_1.0.2n-1ubuntu5.8_amd64.deb \
-  && rm -rf \
-  ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
-  ./python-requests_2.18.4-2ubuntu0.1_all.deb \
-  ./libssl1.0.0_1.0.2n-1ubuntu5.8_amd64.deb
-
-# install iRODs icommands
-RUN apt install -y irods-icommands
+# END - ROOT - ROOT - ROOT - ROOT
 
 USER $NB_UID
 
@@ -58,26 +32,30 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch, hstools, hsclient
-RUN pip install hs_restclient hstools hsclient==0.3.1 \
-  && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/aaraney/nbfetch@fix-overwrite-dialog \
-  && jupyter server extension enable --py nbfetch --sys-prefix
+RUN pip install hs_restclient \
+		hstools \
+		hsclient[all]==0.3.4 \
+		"pydantic<2.0" # this is necessary until pydantic is pinned in hsmodels
+
+#ARG COMMIT="fb9a269af271d2c165b8a56d3ea0aa64fba228fc"
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
+    git+https://github.com/hydroshare/nbfetch.git@master \
+ && jupyter server extension enable --py nbfetch --sys-prefix
+
+ # test with branch @redirect-res-location
+
+# && pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/aaraney/nbfetch@fix-overwrite-dialog \
 
 RUN conda install -y nb_conda_kernels \
   && conda clean --all -f -y
 
-RUN pip install nbserverproxy \
-  && jupyter serverextension enable --py nbserverproxy
-
-# install jupyter-server-proxy
-RUN conda install jupyter-server-proxy -c conda-forge -y
-RUN jupyter labextension install @jupyterlab/server-proxy
-RUN jupyter serverextension enable --sys-prefix jupyter_server_proxy
-
 # install system monitor
-RUN pip install nbresuse==0.3.3 \
-  && jupyter labextension install \
-  jupyterlab-topbar-extension \
-  jupyterlab-system-monitor
+RUN pip install \
+    jupyterlab-system-monitor \
+    jupyter-resource-usage \
+    jupyterlab-topbar \
+    dask-labextension \
+    jupyter-server-proxy
 
 # install and configure additional lab extensions
 RUN conda install -y \
@@ -91,17 +69,13 @@ RUN mamba install -y \
   nbconvert \
   nbformat \
   jupyter_client \
-  mamba \
   ipympl \
+  pyopenssl=23.0.0 \
   && mamba clean --all -f -y
 
-RUN jupyter nbextension enable --py ipyleaflet \
-  && jupyter nbextension enable --py widgetsnbextension \
-  && jupyter labextension install jupyter-leaflet \
-  && jupyter labextension install @jupyter-widgets/jupyterlab-manager
-
-# set the home dir
-ENV HOME=/home/$NB_USER/data
+# set env vars
+ENV HOME=/home/$NB_USER/data \
+    DASK_DISTRIBUTED__DASHBOARD__LINK="proxy/{port}/status"
 
 # set the default terminal start path to $HOME
 RUN echo 'cd $HOME' >> .profile
@@ -110,7 +84,6 @@ RUN echo 'cd $HOME' >> .profile
 RUN pip install hydroshare-on-jupyter==0.1.5 && \
   python -m hydroshare_on_jupyter configure
 
-
 # copy hydroshare on jupyter config file
 ENV DATA=${HOME}/downloads \
     OAUTH=${HOME}/.hs_auth
@@ -118,8 +91,3 @@ ENV DATA=${HOME}/downloads \
 # remove work dir b/c we're using "data"
 RUN rm -rf ~/work
 
-#ARG REBUILD_HERE=yessir
-#RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/aaraney/nbfetch@fix-overwrite-dialog \
-    #  && jupyter server extension enable --py nbfetch --sys-prefix
-
-USER jovyan
