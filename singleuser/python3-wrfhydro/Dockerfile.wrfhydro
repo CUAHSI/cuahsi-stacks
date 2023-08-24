@@ -126,5 +126,34 @@ USER root
 RUN rm -rf XDG_CACHE_HOME/* \
 USER $NB_UID
 
+# add WRF-Hydro executable directory to an environment variable
+ENV WRFHYDRO_PATH=/home/jovyan/wrfhydro
+
+# add helper script
+USER root
+COPY --chmod=0755 prepare_wrfhydro.sh /usr/local/bin/prepare-wrfhydro.sh
+USER $NB_UID
+
+RUN mamba install --quiet -y -c conda-forge \
+    dask \
+    distributed \
+    numpy \
+    matplotlib \
+    shapely \ 
+    requests \
+    pyshp \
+    shapely \
+&& conda clean --all -f -y \
+&& rm -rf $CONDA_DIR/share/jupyter/lab/staging \
+&& rm -rf /home/$NB_USER/.cache/yarn \
+&& rm -rf /home/$NB_USER/.node-gyp \
+&& fix-permissions $CONDA_DIR \
+&& fix-permissions /home/$NB_USER
+
+RUN mamba install -c conda-forge \
+    dask-labextension \
+    nodejs \
+    && jupyter labextension install dask-labextension
+
 # add code directory
 WORKDIR /home/jovyan
