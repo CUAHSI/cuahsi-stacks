@@ -21,7 +21,7 @@ services:
   ###################
   # Base Python 3.7 #
   ###################
-  base-py37:
+  base-py3.7:
     env_file:
       - '.env'
     build: 
@@ -52,7 +52,7 @@ services:
   ##############
   # Scientific #
   ##############
-  scientific:
+  scientific-py3:
     env_file:
       - '.env'
     build:
@@ -69,7 +69,7 @@ services:
   ##################
   # Scientific - R #
   ##################
-  r:
+  scientific-r:
     env_file:
       - '.env'
     build:
@@ -86,7 +86,7 @@ services:
   ##############################
   # 2020 Hydrogeology Syracuse #
   ##############################
-  r-hydrogeology:
+  hydrogeology-r:
     env_file:
       - '.env'
     build:
@@ -102,7 +102,7 @@ services:
   ######################
   # 2020 WHW - Seattle #
   ######################
-  whw:
+  waterhackweek:
     env_file:
       - '.env'
     build:
@@ -170,7 +170,7 @@ services:
   #########
   # SUMMA #
   #########
-  summa:
+  summa-py3:
     env_file:
       - '.env'
     build:
@@ -187,7 +187,7 @@ services:
   ###############
   # CSDMS TOOLS #
   ###############
-  csdms:
+  csdms-tools:
     env_file:
       - '.env'
     build:
@@ -259,7 +259,7 @@ services:
   ###################
   #  EDU - Gerbrand #
   ###################
-  gerbrand:
+  edu:
     env_file:
       - '.env'
     build:
