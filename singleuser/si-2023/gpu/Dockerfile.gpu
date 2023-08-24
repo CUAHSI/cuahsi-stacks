@@ -1,0 +1,168 @@
+
+
+FROM cuahsi/si-python-deps:latest as pythondeps
+FROM cuahsi/singleuser-si:ngen as ngen
+FROM jupyterhub/singleuser:4.0
+
+
+# ----------------------
+# Linux System Libraries
+# ----------------------
+USER root
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt update && apt install -y --no-install-recommends \
+  git \
+  vim \
+  nano \
+  ca-certificates \
+  build-essential \
+  gnupg \ 
+  wget \
+  libgdal-dev \
+  libmpich-dev \
+  zip \ 
+  unzip \
+  p7zip-full \
+  texlive-xetex \
+  texlive-latex-recommended \
+  htop \
+  libnetcdff-dev \
+  curl \
+  gfortran \
+# NextGen System Dependencies
+  tar \
+  g++ \
+  gcc \
+  make \
+  cmake \
+  bzip2 \
+  libudunits2-dev \
+  texinfo \
+  ## Cuda System Dependencies
+  #  nvidia-cuda-toolkit \
+  #  kmod \
+  #  lsof \
+  #  libstdc++6 \
+  && rm -rf /var/lib/apt/lists/*
+USER $NB_UID
+# ---------------------
+
+
+# ---------------------
+# Directory Setup
+# ---------------------
+# set the home dir
+ENV HOME=/home/$NB_USER
+
+# set the default terminal start path to $HOME
+RUN echo 'cd $HOME' >> .profile
+
+# remove work dir b/c we're using "data"
+RUN rm -rf ~/work
+
+# create directory for compiled code
+USER root
+RUN mkdir /opt/src \
+ && chown -R jovyan:users /opt/src
+USER $NB_UID
+
+# set Environment Variables
+ENV XDG_CACHE_HOME=/home/$NB_USER/.cache/ \
+    GDAL_DATA=/opt/conda/share/gdal \
+    PROJ_LIB=/opt/conda/share/proj \
+    GDAL_DRIVER_PATH=/opt/conda/lib/gdalplugins \
+    DATA=${HOME}/downloads \
+    OAUTH=${HOME}/.hs_auth
+# ---------------------
+
+# ---------------------
+# Python Deps - MultiStage
+# ---------------------
+COPY --from=pythondeps /opt/conda/ /opt/conda
+COPY --from=pythondeps /opt/src/clawpack_src /opt/src/clawpack_src
+
+# Import matplotlib the first time to build the font cache.
+RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
+    fix-permissions /home/$NB_USER
+# ---------------------
+
+
+# ------------------------- 
+# NextGen
+# ------------------------- 
+COPY --from=ngen /opt/src/ngen/ngen /usr/local/bin/ngen
+ENV VIRTUAL_ENV=/opt/conda/lib/python3.9
+# ---------------------
+
+
+# ----------------------------------
+# JupyterLab Extension Configuration
+# ----------------------------------
+# Dask Server Extension Configuration
+# https://github.com/dask/dask-labextension/issues/109 
+ENV DASK_DISTRIBUTED__DASHBOARD__LINK="proxy/{port}/status"
+
+RUN jupyter server extension enable --py nbfetch --sys-prefix
+
+# install and configure hydroshare on jupyter
+RUN pip install hydroshare-on-jupyter==0.1.5 && \
+  python -m hydroshare_on_jupyter configure
+
+RUN pip install jupyterhub==3.1.1
+#RUN pip install jupyterhub==1.*
+# ----------------------------------
+
+ENV CLAW=/opt/src/clawpack_src/clawpack-v5-9-0 \
+     FC=gfortran 
+
+# ---------------------
+# Cuda Stuff
+# ---------------------
+# Allow drivers installed by the nvidia-driver-installer to be located
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/nvidia/lib64:/opt/conda/lib
+# Also, utilities like `nvidia-smi` are installed here
+ENV PATH=${PATH}:/usr/local/nvidia/bin
+
+#RUN cd /tmp \
+#    && git clone https://github.com/NVIDIA/cuda-samples.git
+
+
+USER root
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt update && apt install -y --no-install-recommends \
+# Cuda System Dependencies
+  nvidia-cuda-toolkit \
+  kmod \
+  lsof \
+  libstdc++6 \
+  && rm -rf /var/lib/apt/lists/*
+USER $NB_UID
+
+RUN mamba install -y \
+    -c conda-forge \
+    -c nvidia \
+    -c pytorch \
+    "cudatoolkit>=11.6.0" \
+    cudnn \
+    "pytorch=*=*cuda*" \
+    numba \
+ && mamba clean --all -f -y
+
+###RUN > /opt/conda/conda-meta/pinned # clear conda pins
+###COPY --chown=$NB_UID:$NB_UID environment.yaml /tmp/environment.yaml
+###RUN mamba env update -n base --file /tmp/environment.yaml \
+### && mamba clean -afy
+
+COPY --chown=$NB_UID:$NB_UID requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+
+# ---------------------
+# Cleaning
+# ---------------------
+USER $NB_UID
+WORKDIR /home/$NB_USER/data 
+
+# clean cache files
+RUN rm -rf XDG_CACHE_HOME/*
+RUN conda config --append envs_dirs /home/jovyan/data/conda-envs

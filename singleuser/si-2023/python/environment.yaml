@@ -1,0 +1,42 @@
+name: base
+channels:
+  - conda-forge
+dependencies:
+  - bokeh>=3.1.1
+  - dask>=2023.5.0
+  - distributed>=2023.5.0
+  - fsspec>=2023.5.0
+  - gdal>=3.6.4
+  - geopandas>=0.13.0
+  - netcdf4>=1.6.3
+  - numpy>=1.24.3
+  - pandas>=2.0
+  - python=3.9.16
+  - scipy>=1.10.1
+  - xarray>=2023.5.0
+  - fiona
+  - folium
+  - geemap
+  - h5py
+  - hdf5
+  - holoviews
+  - ipyleaflet
+  - ipympl
+  - jupyter_client
+  - matplotlib
+  - nb_conda_kernels
+  - networkx
+  - pillow
+  - proj
+  - pyproj
+  - pyshp
+  - rasterio
+  - rasterstats
+  - requests
+  - scikit-learn
+  - shapely
+  - sympy
+  - pcraster
+  - nodejs
+  - altair
+  - cartopy

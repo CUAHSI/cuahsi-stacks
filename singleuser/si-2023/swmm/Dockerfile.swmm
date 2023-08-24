@@ -1,0 +1,22 @@
+FROM jupyterhub/singleuser:4.0
+LABEL maintainer="Tony Castronova <acastronova@cuahsi.org>"
+
+USER root
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt update && apt install -y --no-install-recommends \
+  git \
+  vim \
+  wget \
+  build-essential \
+  zip \ 
+  unzip \
+  g++ \
+  gcc \
+  make \
+  && rm -rf /var/lib/apt/lists/*
+
+USER root
+
+WORKDIR /opt
+COPY swmm_build.sh swmm_build.sh
+RUN sh swmm_build.sh

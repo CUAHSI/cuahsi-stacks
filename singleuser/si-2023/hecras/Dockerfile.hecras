@@ -1,0 +1,24 @@
+FROM jupyterhub/singleuser:4.0
+LABEL maintainer="Tony Castronova <acastronova@cuahsi.org>"
+
+USER root
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt update && apt install -y --no-install-recommends \
+  git \
+  vim \
+  wget \
+  build-essential \
+  zip \ 
+  unzip \
+  g++ \
+  gcc \
+  make \
+  && rm -rf /var/lib/apt/lists/*
+
+USER root
+
+#https://www.hec.usace.army.mil/software/hec-ras/downloads/HEC-RAS_610_Linux.zip
+#
+WORKDIR /opt
+COPY install.sh install.sh
+#RUN sh swmm_build.sh
