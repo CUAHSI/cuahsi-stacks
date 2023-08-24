@@ -1,0 +1,5 @@
+jupyterlab-topbar
+jupyterlab-system-monitor
+jupyter-resource-usage
+dask-labextension
+hsclient[all]==0.3.4

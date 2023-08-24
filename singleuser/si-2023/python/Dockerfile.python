@@ -1,0 +1,103 @@
+FROM jupyterhub/singleuser:4.0
+LABEL maintainer="Tony Castronova <acastronova@cuahsi.org>"
+
+USER root
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt update && apt install -y --no-install-recommends \
+  git \
+  vim \
+  build-essential \
+  libgdal-dev \
+  libmpich-dev \
+  zip \ 
+  unzip \
+  libnetcdff-dev \
+  gfortran \
+  g++ \
+  gcc \
+  make \
+  cmake \
+  bzip2 \
+  && rm -rf /var/lib/apt/lists/*
+
+USER $NB_UID
+WORKDIR /opt
+
+RUN > /opt/conda/conda-meta/pinned # clear conda pins
+COPY --chown=$NB_UID:$NB_UID environment.yaml /tmp/environment.yaml
+RUN mamba env update -n base --file /tmp/environment.yaml \
+    && mamba clean -afy
+
+#ENV GDAL_DATA=/opt/conda/share/gdal \
+#    GDAL_DRIVER_PATH=/opt/conda/lib/gdalplugins \
+#    PROJ_DATA=/opt/conda/share/proj
+
+COPY --chown=$NB_UID:$NB_UID requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+# ---------------------
+# ClawPack Installation
+# ---------------------
+
+USER root
+RUN mkdir /opt/src \
+ && chown -R jovyan:users /opt/src
+USER $NB_UID
+RUN pip install --src=/opt/src/clawpack_src --user -e \
+    git+https://github.com/clawpack/clawpack.git@v5.9.0#egg=clawpack-v5.9.0 \
+    --use-deprecated=legacy-resolver
+
+#### TODO: move to main Dockerfile
+###ENV CLAW=/opt/src/clawpack_src/clawpack-v5-9-0 \
+###    FC=gfortran
+### ---------------------
+
+
+# HydroShare packages
+# install nbfetch, hstools, hsclient
+#RUN pip install hs_restclient hstools hsclient==0.3.1 \
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch@master
+#  && jupyter server extension enable --py nbfetch --sys-prefix
+
+
+## JupyterLab Extensions
+#RUN pip install nbserverproxy \
+#  && jupyter serverextension enable --py nbserverproxy
+#
+## install jupyter-server-proxy
+#RUN conda install jupyter-server-proxy -c conda-forge -y
+#RUN jupyter labextension install @jupyterlab/server-proxy
+#RUN jupyter serverextension enable --sys-prefix jupyter_server_proxy
+#
+## install system monitor
+##RUN pip install jupyter-resource-usage \
+    ##  && jupyter labextension install \
+
+# RUN pip install jupyterlab-topbar-extension \
+#  jupyterlab-system-monitor
+
+## install and configure additional lab extensions
+#RUN mamba install -y \
+#  --channel conda-forge \
+#  --channel anaconda \
+#  ipyleaflet \
+#  nbconvert \
+#  nbformat \
+#  jupyter_client \
+#  ipympl \
+#  pyopenssl=23.0.0 \
+#  && mamba clean --all -f -y
+#
+#RUN jupyter nbextension enable --py ipyleaflet \
+#  && jupyter nbextension enable --py widgetsnbextension \
+#  && jupyter labextension install jupyter-leaflet \
+#  && jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+
+## install and configure hydroshare on jupyter
+#RUN pip install hydroshare-on-jupyter==0.1.5 && \
+#  python -m hydroshare_on_jupyter configure
+#
+## copy hydroshare on jupyter config file
+#ENV DATA=${HOME}/downloads \
+#    OAUTH=${HOME}/.hs_auth
