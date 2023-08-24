@@ -1,0 +1,19 @@
+# derived from the minimal singleuser image 
+
+ARG BASE_VERSION
+FROM jupyterhub/singleuser:$BASE_VERSION
+
+MAINTAINER Tony Castronova <acastronova@cuahsi.org>
+
+USER $NB_UID
+
+# set the home dir
+ENV HOME=/home/$NB_USER/data
+
+# set the default terminal start path to $HOME
+RUN echo 'cd $HOME' >> .profile
+
+# remove work dir b/c we're using "data"
+RUN rm -rf ~/work
+
+USER jovyan
