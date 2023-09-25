@@ -127,10 +127,3 @@ RUN fix-permissions /etc/jupyter/
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
-
-
-#RUN yum install -y python3 python3-pip
-#
-#RUN pip3 install jupyter_client IPython tcl_kernel
-#
-#RUN python3 -m tcl_kernel.install
