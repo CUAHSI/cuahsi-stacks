@@ -21,7 +21,7 @@ services:
   ###################
   # Base Python 3.7 #
   ###################
-  base-py37:
+  base-py3.7:
     env_file:
       - '.env'
     build: 
@@ -52,7 +52,7 @@ services:
   ##############
   # Scientific #
   ##############
-  scientific:
+  scientific-py3:
     env_file:
       - '.env'
     build:
@@ -64,12 +64,12 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-scientific-py3:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-scientific-py3:${CUAHSI_BASE}
 
   ##################
   # Scientific - R #
   ##################
-  r:
+  scientific-r:
     env_file:
       - '.env'
     build:
@@ -81,12 +81,12 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries with the R programming language. Built using cuahsi/jupyterhub-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-scientific-r:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-scientific-r:${CUAHSI_BASE}
 
   ##############################
   # 2020 Hydrogeology Syracuse #
   ##############################
-  r-hydrogeology:
+  hydrogeology-r:
     env_file:
       - '.env'
     build:
@@ -97,12 +97,12 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured with scientific libraries for Tao Wen's 2020 Hydrogeology course at Syracuse University. Built using cuahsi/singleuser-scientific-r:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-hydrogeology-r:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-hydrogeology-r:${CUAHSI_BASE}
 
   ######################
   # 2020 WHW - Seattle #
   ######################
-  whw:
+  waterhackweek:
     env_file:
       - '.env'
     build:
@@ -113,7 +113,7 @@ services:
       labels:
         description: |
           This environment is configured with scientific libraries for the 2020 Waterhackweek Cybertraining event. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-waterhackweek:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-waterhackweek:${CUAHSI_BASE}
 
   ################################
   # 2018 Near Surface Geophysics #
@@ -130,7 +130,7 @@ services:
       labels:
         description: |
           CUAHSI JupyterHub singleuser environment configured for the 2019 Near Surface Geophysics Workshop. This image uses WINE to run R2, gmsh,and pyres. Built using cuahsi/singleuser-scientific-py3:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-geophysics:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-geophysics:${CUAHSI_BASE}
 
 
   ####################
@@ -165,12 +165,12 @@ services:
       labels:
         description: |
           Environment configured for Parflow. Built using cuahsi/singleuser-base:centos7.v${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-parflow:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-parflow:${CUAHSI_BASE}
 
   #########
   # SUMMA #
   #########
-  summa:
+  summa-py3:
     env_file:
       - '.env'
     build:
@@ -182,12 +182,12 @@ services:
       labels:
         description: |
           Environment configured for SUMMA. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-summa-py3:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-summa-py3:${CUAHSI_BASE}
 
   ###############
   # CSDMS TOOLS #
   ###############
-  csdms:
+  csdms-tools:
     env_file:
       - '.env'
     build:
@@ -199,7 +199,7 @@ services:
       labels:
         description: |
           Environment configured for the Community Surface Dynamics Modeling System. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-csdms-tools:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-csdms-tools:${CUAHSI_BASE}
 
   #############
   # WRF-Hydro #
@@ -220,7 +220,7 @@ services:
       labels:
         description: |
           Environment configured for the NCAR WRF-Hydro model (nwm v2.0). Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-wrfhydro:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-wrfhydro:${CUAHSI_BASE}
 
   #############
   #  SI-2021  #
@@ -237,7 +237,7 @@ services:
       labels:
         description: |
           Environment configured for the 2021 SI. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-si2021:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-si2021:${CUAHSI_BASE}
   
   #############
   #  MODFLOW  #
@@ -254,12 +254,12 @@ services:
       labels:
         description: |
           Environment configured to run MODFLOW for the 2021 IAH conference. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
-    image: ${REPOSITORY}/singleuser-modflow:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-modflow:${CUAHSI_BASE}
   
   ###################
   #  EDU - Gerbrand #
   ###################
-  gerbrand:
+  edu:
     env_file:
       - '.env'
     build:
@@ -268,7 +268,7 @@ services:
       args:
         # image version to use as base
         BASE_VERSION: ${CUAHSI_BASE}
-    image: ${REPOSITORY}/singleuser-edu:${BUILD_DATE}
+    image: ${REPOSITORY}/singleuser-edu:${CUAHSI_BASE}
 
   ########
   # Test #

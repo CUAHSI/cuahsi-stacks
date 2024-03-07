@@ -24,11 +24,11 @@ jobs:
       matrix:
         IMAGE_VARIANT:
           - base
-          - scientific
-          - r
-          - summa
+          - scientific-py3
+          - scientific-r
+          - summa-py3
           - wrfhydro
-          - csdms
+          - csdms-tools
     steps:
       - name: Checkout
         uses: actions/checkout@v2

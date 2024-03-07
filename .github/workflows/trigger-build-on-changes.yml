@@ -27,11 +27,11 @@ jobs:
       with:
         filters: |
           base: ${{ env.IMAGE_ROOT }}/base/**
-          scientific: ${{ env.IMAGE_ROOT }}/python3-scientific/**
-          r: ${{ env.IMAGE_ROOT }}/r/**
-          summa: ${{ env.IMAGE_ROOT }}/python3-summa/**
+          scientific-py3: ${{ env.IMAGE_ROOT }}/python3-scientific/**
+          scientific-r: ${{ env.IMAGE_ROOT }}/r/**
+          summa-py3: ${{ env.IMAGE_ROOT }}/python3-summa/**
           wrfhydro: ${{ env.IMAGE_ROOT }}/python3-wrfhydro/**
-          csdms: ${{ env.IMAGE_ROOT }}/csdms-tools/**
+          csdms-tools: ${{ env.IMAGE_ROOT }}/csdms-tools/**
   setup-build-publish-deploy:
     needs: detect-changes
     name: Setup, Build, and Publish
