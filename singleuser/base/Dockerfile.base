@@ -38,7 +38,7 @@ RUN pip install hs_restclient \
 		"pydantic<2.0" # this is necessary until pydantic is pinned in hsmodels
 
 RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
-    git+https://github.com/hydroshare/nbfetch.git@master \
+    git+https://github.com/hydroshare/nbfetch.git@hspuller-auth \
  && jupyter server extension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
