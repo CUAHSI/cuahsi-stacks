@@ -68,7 +68,7 @@ jobs:
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
           echo ------------
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA"
+          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
