@@ -2,6 +2,10 @@ name: Periodically Build and Publish to Registry
 
 env:
   IMAGE_ROOT: singleuser
+  REGISTRY_HOSTNAME: docker.io
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
 
 on:
   schedule:
