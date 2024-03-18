@@ -1,0 +1,56 @@
+name: Build and Publish to Registry on Github push
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  IMAGE_ROOT: singleuser
+  REGISTRY_HOSTNAME: docker.io
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Image Name'     
+        required: true
+        default: 'base'
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: ${{ env.IMAGE_ROOT }}
+      
+      - name: Docker Login
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USER --password-stdin
+
+      # Build the Docker image
+      - name: Build
+        run: |
+          cd "${IMAGE_ROOT}"
+          docker compose build ${{ inputs.image }}
+      # - name: Echo env configuration and set image tag
+      #   id: tagging
+      #   run: |
+      #     echo "JH_BASE: ${{ env.JH_BASE }}"
+      #     echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+      #     echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+      #     echo ------------
+      #     export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
+      #     export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
+      #     echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+      #     echo $DOCKER_FULL_PATH
+      #     docker tag $DOCKER_TAG $DOCKER_FULL_PATH
+
+      # - name: Push Docker Image
+      #   run: |
+      #     docker push ${{ env.DOCKER_FULL_PATH }}
