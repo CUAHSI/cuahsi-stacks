@@ -83,6 +83,6 @@ RUN pip install hydroshare-on-jupyter==0.1.5 && \
 ENV DATA=${HOME}/downloads \
     OAUTH=${HOME}/.hs_auth
 
-# remove work dir b/c we're using "data"!
+# remove work dir b/c we're using "data"
 RUN rm -rf ~/work
 
