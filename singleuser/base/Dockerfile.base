@@ -79,7 +79,7 @@ RUN echo 'cd $HOME' >> .profile
 RUN pip install hydroshare-on-jupyter==0.1.5 && \
   python -m hydroshare_on_jupyter configure
 
-# copy hydroshare on jupyter config file!
+# copy hydroshare on jupyter config file
 ENV DATA=${HOME}/downloads \
     OAUTH=${HOME}/.hs_auth
 
