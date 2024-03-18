@@ -11,10 +11,15 @@ env:
 on:
   workflow_dispatch:
     inputs:
+      code-branch:
+        description: 'Code branch to build from'
+        required: true
+        default: master
       image:
         description: 'Image Name'     
         required: true
         default: 'base'
+      
 
 jobs:
   build-image:
@@ -23,6 +28,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.code-branch }}
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
@@ -36,6 +43,11 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |
+          echo "Building Image for:"
+          echo "   Branch = ${{ inputs.code-branch }}
+          echo "   Image  = ${{ inputs.image }}
+          echo -e "\n"
+          
           cd "${IMAGE_ROOT}"
           docker compose build ${{ inputs.image }}
       # - name: Echo env configuration and set image tag
