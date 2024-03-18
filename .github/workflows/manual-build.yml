@@ -1,4 +1,4 @@
-name: Build and Publish to Registry on Github push
+name: Manual Build from Branch
 
 env:
   GITHUB_SHA: ${{ github.sha }}
