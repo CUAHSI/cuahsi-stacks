@@ -7,6 +7,7 @@ env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 on:
   push:
@@ -63,12 +64,15 @@ jobs:
       - name: Echo env configuration and set image tag
         id: tagging
         run: |
+          echo "IMAGE_VARIANT: ${{ matrix.IMAGE_VARIANT }}"
           echo "JH_BASE: ${{ env.JH_BASE }}"
           echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "BRANCH_NAME: $BRANCH_NAME"
           echo ------------
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
+          export DOCKER_FULL_PATH="$DOCKER_TAG-$BRANCH_NAME-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
