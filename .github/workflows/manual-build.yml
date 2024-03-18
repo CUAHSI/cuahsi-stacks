@@ -44,8 +44,8 @@ jobs:
       - name: Build
         run: |
           echo "Building Image for:"
-          echo "   Branch = ${{ inputs.code-branch }}
-          echo "   Image  = ${{ inputs.image }}
+          echo "   Branch = ${{ inputs.code-branch }}"
+          echo "   Image  = ${{ inputs.image }}"
           echo -e "\n"
           
           cd "${IMAGE_ROOT}"
