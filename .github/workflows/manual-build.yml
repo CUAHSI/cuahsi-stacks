@@ -14,12 +14,27 @@ on:
       code-branch:
         description: 'Code branch to build from'
         required: true
-        default: master
+        default: develop
       image:
+        type: choice
         description: 'Image Name'     
         required: true
         default: 'base'
-      
+        options:
+          - base
+          - base-py37
+          - base-centos7
+          - scientific
+          - r
+          - r-hydrogeology
+          - whw 
+          - geophysics
+          - parflow
+          - summa
+          - wrfhydro
+          - csdms
+          - modflow
+          - physical-hydrology
 
 jobs:
   build-image:
