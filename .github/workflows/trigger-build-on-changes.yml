@@ -72,7 +72,7 @@ jobs:
           echo "BRANCH_NAME: $BRANCH_NAME"
           echo ------------
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-$BRANCH_NAME-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:$BRANCH_NAME-latest"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
