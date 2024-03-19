@@ -35,6 +35,10 @@ on:
           - csdms
           - modflow
           - physical-hydrology
+      push-to-dockerhub:
+        description: boolean flag to indicate if the image should be pushed to hub.docker.com
+        required: true
+        default: 'false'
 
 jobs:
   build-image:
@@ -56,13 +60,19 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USER --password-stdin
 
       # Build the Docker image
-      - name: Build
+      - name: Echo Info
+        id: info
         run: |
           echo "Building Image for:"
           echo "   Branch = ${{ inputs.code-branch }}"
           echo "   Image  = ${{ inputs.image }}"
-          echo -e "\n"
-          
+          echo ------------
+          echo "JH_BASE: ${{ env.JH_BASE }}"
+          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo ------------
+      - name: Build
+        run: |      
           cd "${IMAGE_ROOT}"
           docker compose build ${{ inputs.image }}
       # - name: Echo env configuration and set image tag
@@ -72,12 +82,14 @@ jobs:
       #     echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
       #     echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
       #     echo ------------
-      #     export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-      #     export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
-      #     echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-      #     echo $DOCKER_FULL_PATH
-      #     docker tag $DOCKER_TAG $DOCKER_FULL_PATH
 
-      # - name: Push Docker Image
-      #   run: |
-      #     docker push ${{ env.DOCKER_FULL_PATH }}
+
+      - name: Push Docker Image
+        if: ${{ inputs.push-to-dockerhub }} == 'true'
+        run: |
+          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
+          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
+          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+          echo $DOCKER_FULL_PATH
+          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
+          docker push ${{ env.DOCKER_FULL_PATH }}
