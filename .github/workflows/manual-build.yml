@@ -84,4 +84,4 @@ jobs:
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
-          docker push ${{ env.DOCKER_FULL_PATH }}
+          docker push $DOCKER_FULL_PATH
