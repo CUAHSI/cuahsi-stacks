@@ -79,7 +79,15 @@ jobs:
       - name: Push Docker Image
         if: ${{ inputs.push-to-dockerhub }} 
         run: |
-          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ env.CUAHSI_BASE }}"
+
+          # set the DATE variable to BUILD_DATE
+          # unless we're building the 'base' image
+          DATE=${{ env.BUILD_DATE }}
+          if [ ${{ inputs.image }} == 'base ]; then
+            DATE= ${{ env.CUAHSI_BASE }}
+          fi
+          
+          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:$DATE"
           export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
