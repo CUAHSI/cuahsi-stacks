@@ -80,7 +80,8 @@ jobs:
       - name: Push Docker Image
         if: ${{ inputs.push-to-dockerhub }} 
         run: |
-
+          echo "Begin Image Tagging and Pushing"
+          
           # use BUILD_DATE in the tag
           # unless we're building the 'base' image
           if [ ${{ inputs.image }} == "base" ]; then
@@ -90,10 +91,14 @@ jobs:
           fi
 
           export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
+          echo "Old Image Name/Tag = $DOCKER_TAG"
+          echo "New Image Name/Tag = $DOCKER_FULL_PATH"
+          
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-          echo $DOCKER_FULL_PATH
+          
           
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
           docker push $DOCKER_FULL_PATH
-          
+
+          echo "End Image Tagging and Pushing"
           
