@@ -35,6 +35,7 @@ on:
           - csdms-tools
           - modflow
           - hl-physical-hydrology
+          - test
       push-to-dockerhub:
         description: Push to Repository
         type: boolean
