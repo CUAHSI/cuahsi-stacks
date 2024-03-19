@@ -1,7 +1,7 @@
-# derived from the minimal singleuser image 
-
 ARG BASE_VERSION
-FROM jupyterhub/singleuser:$BASE_VERSION
+
+# derived from the minimal singleuser image 
+FROM jupyterhub/singleuser-base:$BASE_VERSION
 
 MAINTAINER Tony Castronova <acastronova@cuahsi.org>
 
