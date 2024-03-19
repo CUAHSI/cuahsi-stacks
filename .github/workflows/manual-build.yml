@@ -24,19 +24,19 @@ on:
           - base
           - base-py37
           - base-centos7
-          - scientific
-          - r
-          - r-hydrogeology
-          - whw 
+          - scientific-py3
+          - scientific-r
+          - hydrogeology-r
+          - waterhackweek 
           - geophysics
           - parflow
-          - summa
+          - summa-py3
           - wrfhydro
-          - csdms
+          - csdms-tools
           - modflow
-          - physical-hydrology
+          - hl-physical-hydrology
       push-to-dockerhub:
-        description: Push Result to Repository
+        description: Push to Repository
         type: boolean
         required: true
         default: false
