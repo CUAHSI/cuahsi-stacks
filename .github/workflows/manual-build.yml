@@ -36,9 +36,10 @@ on:
           - modflow
           - physical-hydrology
       push-to-dockerhub:
-        description: boolean flag to indicate if the image should be pushed to hub.docker.com
+        description: Push Result to Repository
+        type: boolean
         required: true
-        default: 'false'
+        default: false
 
 jobs:
   build-image:
@@ -75,21 +76,12 @@ jobs:
         run: |      
           cd "${IMAGE_ROOT}"
           docker compose build ${{ inputs.image }}
-      # - name: Echo env configuration and set image tag
-      #   id: tagging
-      #   run: |
-      #     echo "JH_BASE: ${{ env.JH_BASE }}"
-      #     echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
-      #     echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
-      #     echo ------------
-
-
       - name: Push Docker Image
-        if: ${{ inputs.push-to-dockerhub }} == 'true'
+        if: ${{ inputs.push-to-dockerhub }} 
         run: |
-          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA-built_on_$(date +'%Y.%m.%d')"
+          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}::${{ env.CUAHSI_BASE }}"
+          export DOCKER_NEW_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
-          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
-          docker push ${{ env.DOCKER_FULL_PATH }}
+          docker tag $DOCKER_TAG $DOCKER_NEW_TAG
+          docker push ${{ env.DOCKER_NEW_TAG }}
