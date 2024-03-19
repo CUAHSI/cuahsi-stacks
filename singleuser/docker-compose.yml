@@ -283,3 +283,17 @@ services:
         # image version to use as base
         BASE_VERSION: ${CUAHSI_BASE}
     image: cuahsi/singleuser-hl-physical-hydrology:${BUILD_DATE}
+  
+  ############################
+  #  TEST Image For Building #
+  ############################
+  test:
+    env_file:
+      - '.env'
+    build:
+      context: ./test
+      dockerfile: Dockerfile.test
+      args:
+        # image version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+    image: cuahsi/singleuser-test:${BUILD_DATE}
