@@ -24,11 +24,11 @@ jobs:
       matrix:
         IMAGE_VARIANT:
           - base
-          - scientific
-          - r
-          - summa
+          - scientific-py3
+          - scientific-r
+          - summa-py3
           - wrfhydro
-          - csdms
+          - csdms-tools
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -44,32 +44,11 @@ jobs:
         uses: xom9ikk/dotenv@v2
         with:
           path: ${{ env.IMAGE_ROOT }}
-      
-      - name: Docker Login
-        run: |
-          echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USER --password-stdin
 
       # Build the Docker image
       - name: Build
         run: |
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
-      
-      - name: Echo env configuration and set image tag
-        id: tagging
-        run: |
-          echo "JH_BASE: ${{ env.JH_BASE }}"
-          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
-          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
-          echo ------------
-          export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-periodic-$(date +'%Y.%m.%d')"
-          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-          echo $DOCKER_FULL_PATH
-          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
-
-      - name: Push Docker Image
-        run: |
-          docker push $DOCKER_FULL_PATH
 
     # TODO: run tests?

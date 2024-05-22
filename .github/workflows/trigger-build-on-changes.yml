@@ -7,6 +7,7 @@ env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 on:
   push:
@@ -27,11 +28,11 @@ jobs:
       with:
         filters: |
           base: ${{ env.IMAGE_ROOT }}/base/**
-          scientific: ${{ env.IMAGE_ROOT }}/python3-scientific/**
-          r: ${{ env.IMAGE_ROOT }}/r/**
-          summa: ${{ env.IMAGE_ROOT }}/python3-summa/**
+          scientific-py3: ${{ env.IMAGE_ROOT }}/python3-scientific/**
+          scientific-r: ${{ env.IMAGE_ROOT }}/r/**
+          summa-py3: ${{ env.IMAGE_ROOT }}/python3-summa/**
           wrfhydro: ${{ env.IMAGE_ROOT }}/python3-wrfhydro/**
-          csdms: ${{ env.IMAGE_ROOT }}/csdms-tools/**
+          csdms-tools: ${{ env.IMAGE_ROOT }}/csdms-tools/**
   setup-build-publish-deploy:
     needs: detect-changes
     name: Setup, Build, and Publish
@@ -63,12 +64,15 @@ jobs:
       - name: Echo env configuration and set image tag
         id: tagging
         run: |
+          echo "IMAGE_VARIANT: ${{ matrix.IMAGE_VARIANT }}"
           echo "JH_BASE: ${{ env.JH_BASE }}"
           echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
           echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "BRANCH_NAME: $BRANCH_NAME"
           echo ------------
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="$DOCKER_TAG-$GITHUB_SHA"
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}:$BRANCH_NAME-latest"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
           echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH

@@ -1,0 +1,104 @@
+name: Manual Build from Branch
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  IMAGE_ROOT: singleuser
+  REGISTRY_HOSTNAME: docker.io
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      code-branch:
+        description: 'Code branch to build from'
+        required: true
+        default: develop
+      image:
+        type: choice
+        description: 'Image Name'     
+        required: true
+        default: 'base'
+        options:
+          - base
+          - base-py37
+          - base-centos7
+          - scientific-py3
+          - scientific-r
+          - hydrogeology-r
+          - waterhackweek 
+          - geophysics
+          - parflow
+          - summa-py3
+          - wrfhydro
+          - csdms-tools
+          - modflow
+          - hl-physical-hydrology
+          - test
+      push-to-dockerhub:
+        description: Push to Repository
+        type: boolean
+        required: true
+        default: false
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.code-branch }}
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: ${{ env.IMAGE_ROOT }}
+      
+      - name: Docker Login
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USER --password-stdin
+
+      # Build the Docker image
+      - name: Echo Info
+        id: info
+        run: |
+          echo "Building Image for:"
+          echo "   Branch = ${{ inputs.code-branch }}"
+          echo "   Image  = ${{ inputs.image }}"
+          echo ------------
+          echo "JH_BASE: ${{ env.JH_BASE }}"
+          echo "CUAHSI_BASE: ${{ env.CUAHSI_BASE }}"
+          echo "BUILD_DATE: ${{ env.BUILD_DATE }}"
+          echo ------------
+      - name: Build
+        run: |      
+          cd "${IMAGE_ROOT}"
+          docker compose build ${{ inputs.image }}
+      - name: Push Docker Image
+        if: ${{ inputs.push-to-dockerhub }} 
+        run: |
+          echo "Begin Image Tagging and Pushing"
+          
+          # use BUILD_DATE in the tag
+          # unless we're building the 'base' image
+          if [ ${{ inputs.image }} == "base" ]; then
+            export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ env.CUAHSI_BASE }}"
+          else
+            export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ env.BUILD_DATE }}"
+          fi
+
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ inputs.image }}:${{ inputs.code-branch }}-latest"
+          echo "Old Image Name/Tag = $DOCKER_TAG"
+          echo "New Image Name/Tag = $DOCKER_FULL_PATH"
+          
+          echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
+          
+          
+          docker tag $DOCKER_TAG $DOCKER_FULL_PATH
+          docker push $DOCKER_FULL_PATH
+
+          echo "End Image Tagging and Pushing"
+          
