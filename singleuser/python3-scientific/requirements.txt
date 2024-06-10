@@ -1,4 +1,4 @@
-dataretrieval==1.0.6
+dataretrieval==1.0.9
 tabulate==0.8.10
 pynhd==0.16.3
 jenkspy==0.2.0
