@@ -74,7 +74,7 @@ jobs:
           echo ------------
 
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ inputs.code-branch }}-latest"
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:$BRANCH_NAME-latest"
           echo "Old Image Name/Tag = $DOCKER_TAG"
           echo "New Image Name/Tag = $DOCKER_FULL_PATH"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
