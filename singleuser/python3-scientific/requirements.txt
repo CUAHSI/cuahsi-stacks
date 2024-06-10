@@ -1,6 +1,6 @@
 dataretrieval==1.0.6
 tabulate==0.8.10
-pynhd==0.13.3
+pynhd==0.16.3
 jenkspy==0.2.0
 pyhydroqc==0.0.4
-hsclient[all]==0.3.4
+hsclient[all]==1.0.0
