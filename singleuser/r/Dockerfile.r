@@ -107,7 +107,6 @@ RUN mamba install -y \
 && conda clean --all -f -y \
 && fix-permissions $CONDA_DIR
 
-
 RUN mamba install -y \
   --channel conda-forge \
   r-nnls \
@@ -116,6 +115,16 @@ RUN mamba install -y \
   pyproj \
 && conda clean --all -f -y \
 && fix-permissions $CONDA_DIR
+
+RUN mamba install -y \
+  --channel conda-forge \
+  r-terra \
+  r-arrow \
+&& conda clean --all -f -y \
+&& fix-permissions $CONDA_DIR
+
+# Install NHDPlusTools
+RUN R -e 'install.packages("nhdplusTools", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")'
 
 # set projection info for use by r-sf.
 # this requires that pyproj is installed
