@@ -124,7 +124,7 @@ RUN mamba install -y \
 && fix-permissions $CONDA_DIR
 
 # Install NHDPlusTools
-RUN R -e 'install.packages("nhdplusTools", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")'
+RUN R -e 'install.packages("nhdplusTools", repos = "https://cran.rstudio.com/")'
 
 # set projection info for use by r-sf.
 # this requires that pyproj is installed
