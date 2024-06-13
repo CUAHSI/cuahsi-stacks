@@ -120,6 +120,7 @@ RUN mamba install -y \
   --channel conda-forge \
   r-terra \
   r-arrow \
+  r-climate4r.climdex \
 && conda clean --all -f -y \
 && fix-permissions $CONDA_DIR
 
