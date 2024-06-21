@@ -5,3 +5,5 @@ jenkspy==0.2.0
 pyhydroqc==0.0.4
 hsclient[all]==1.0.1
 pygeohydro==0.16.5
+cartopy==0.23.0
+geoviews==1.12.0
