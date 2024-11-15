@@ -50,3 +50,4 @@ dependencies:
   - "tqdm>=4.62.3"
   - "ulmo>=0.8.8"
   - "xarray>=2022.6.0"
+  - "xesmf>=0.8.8"
