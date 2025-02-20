@@ -3,7 +3,7 @@ tabulate==0.8.10
 pynhd==0.16.3
 jenkspy==0.2.0
 pyhydroqc==0.0.4
-hsclient[all]==1.0.1
+hsclient[all]==1.1.3
 pygeohydro==0.16.5
 cartopy==0.23.0
 geoviews==1.12.0
