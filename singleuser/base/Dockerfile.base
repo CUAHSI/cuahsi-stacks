@@ -76,7 +76,7 @@ ENV HOME=/home/$NB_USER/data \
 RUN echo 'cd $HOME' >> .profile
 
 # install and configure hydroshare on jupyter
-RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@v0.2.0 && \
+RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@0.2.1 && \
   python -m hydroshare_on_jupyter configure
 
 # copy hydroshare on jupyter config file
