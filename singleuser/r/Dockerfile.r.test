@@ -35,7 +35,7 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 # HydroShare packages
 # install nbfetch, hstools
 RUN pip install hs_restclient hstools==0.0.2 \
-&& pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch \
+&& pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@v0.6.2 \
 && jupyter serverextension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
