@@ -95,7 +95,7 @@ RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://
 
 
 ## install and configure hydroshare on jupyter
-#RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@0.2.1 && \
+#RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@0.2.2 && \
 #  python -m hydroshare_on_jupyter configure
 #
 ## copy hydroshare on jupyter config file
