@@ -129,8 +129,8 @@ ENV DASK_DISTRIBUTED__DASHBOARD__LINK="proxy/{port}/status"
 RUN jupyter server extension enable --py nbfetch --sys-prefix
 
 # install and configure hydroshare on jupyter
-RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@0.2.2 && \
-  python -m hydroshare_on_jupyter configure
+# RUN pip install git+https://github.com/hydroshare/hydroshare_on_jupyter.git@0.2.2 && \
+#   python -m hydroshare_on_jupyter configure
 # ----------------------------------
 
 
