@@ -85,7 +85,7 @@ RUN pip install \
 	hsclient \
 	nbserverproxy \
 	nbresuse \
-	# hydroshare_on_jupyter \
+	hydroshare_on_jupyter \
 	ulmo \
 	pynhd \
 	dataretrieval \
