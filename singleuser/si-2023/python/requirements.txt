@@ -3,4 +3,4 @@ jupyterlab-topbar
 jupyterlab-system-monitor
 jupyter-resource-usage
 dask-labextension
-hsclient[all]==1.1.3
+hsclient[all]==1.1.5
