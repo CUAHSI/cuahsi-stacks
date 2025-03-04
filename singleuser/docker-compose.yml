@@ -294,6 +294,8 @@ services:
       context: ./test
       dockerfile: Dockerfile.test
       args:
-        # image version to use as base
         BASE_VERSION: ${CUAHSI_BASE}
-    image: cuahsi/singleuser-test:${BUILD_DATE}
+      labels:
+        description: |
+          Test Imgage. Built using cuahsi/singleuser-base:$BASE_VERSION on ${BUILD_DATE}.
+    image: ${REPOSITORY}/singleuser-test:${CUAHSI_BASE}
