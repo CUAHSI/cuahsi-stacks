@@ -53,6 +53,13 @@ RUN pip install \
     jupyter-server-proxy
 
 # install and configure additional lab extensions
+# use the miniforge distribuition of Mamba
+# https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html#fresh-install-recommended
+RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
+  && chmod +x Miniforge3-$(uname)-$(uname -m).sh \
+  && bash Miniforge3-$(uname)-$(uname -m).sh -b \
+  && rm Miniforge3-$(uname)-$(uname -m).sh
+# ENV PATH="/root/miniforge3/bin:${PATH}"
 RUN conda install -y \
   mamba \
   && mamba clean --all -f -y
