@@ -76,7 +76,6 @@ RUN pip install \
     torch \
     numba \
     hsclient \ 
-    hstools \
     tensorboard
 
 # install chaopeng's tool 

@@ -28,8 +28,6 @@ RUN conda install -y -n base \
  paramiko \
 && conda clean --all -y
 
-RUN /opt/conda/bin/pip install --no-cache-dir hs_restclient
-
 # NBExtensions
 # install jupyter_contrib_nbextensions dependencies
 RUN conda install -y -n base \
