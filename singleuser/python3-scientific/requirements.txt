@@ -1,9 +1,8 @@
-dataretrieval==1.0.9
-tabulate==0.8.10
-pynhd==0.16.3
-jenkspy==0.2.0
-pyhydroqc==0.0.4
-hsclient[all]==1.1.5
-pygeohydro==0.16.5
-cartopy==0.23.0
-geoviews==1.12.0
+dataretrieval>=1.0.9
+tabulate>=0.8.10
+pynhd>=0.16.3
+jenkspy>=0.2.0
+pygeohydro>=0.16.5
+cartopy>=0.23.0
+geoviews>=1.12.0
+#pyhydroqc>=0.0.4 # removed until https://github.com/AmberSJones/pyhydroqc/issues/107 is resolved
