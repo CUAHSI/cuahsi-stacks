@@ -32,7 +32,7 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch, hsclient
-RUN pip install hsclient[all]==1.1.5 \
+RUN pip install hsclient[all]==1.1.6 \
 		pydantic==2.7.*
 
 RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
@@ -58,9 +58,9 @@ RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Mini
   && bash Miniforge3-$(uname)-$(uname -m).sh -b \
   && rm Miniforge3-$(uname)-$(uname -m).sh
 # ENV PATH="/root/miniforge3/bin:${PATH}"
-RUN conda install -y \
-  mamba \
-  && mamba clean --all -f -y
+#RUN conda install -y \
+#  mamba \
+#  && mamba clean --all -f -y
 
 RUN mamba install -y \
   --channel conda-forge \
