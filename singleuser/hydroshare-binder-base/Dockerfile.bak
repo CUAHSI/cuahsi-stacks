@@ -34,7 +34,6 @@ vim \
 #&& make \
 #&& rm -rf /tmp/*
 #
-#RUN pip install hs_restclient hstools
 
 USER jovyan
 
