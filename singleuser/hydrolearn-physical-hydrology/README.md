@@ -10,6 +10,3 @@ resources engineering. Within this environment, you'll find TauDEM version
 rasterio, rasterstats, osgeo, shapely, descartes, and fiona. These resources
 collectively empower students to effectively engage in terrain analysis
 exercises as part of the course curriculum.
-
-
-
