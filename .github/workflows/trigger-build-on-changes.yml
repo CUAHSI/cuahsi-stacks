@@ -30,6 +30,7 @@ jobs:
           base: ${{ env.IMAGE_ROOT }}/base/**
           scientific-py3: ${{ env.IMAGE_ROOT }}/python3-scientific/**
           scientific-r: ${{ env.IMAGE_ROOT }}/r/**
+          hl-physical-hydrology: ${{ env.IMAGE_ROOT }}/hydrolearn-physical-hydrology/**
           summa-py3: ${{ env.IMAGE_ROOT }}/python3-summa/**
           wrfhydro: ${{ env.IMAGE_ROOT }}/python3-wrfhydro/**
           csdms-tools: ${{ env.IMAGE_ROOT }}/csdms-tools/**
