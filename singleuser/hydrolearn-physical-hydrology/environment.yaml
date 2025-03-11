@@ -1,0 +1,11 @@
+name: physical-hydrology
+channels: 
+  - conda-forge
+  - defaults
+dependencies:
+  - "python==3.7.12"
+  - geopandas
+  - rasterio
+  - rasterstats
+  - descartes
+  - ipykernel
