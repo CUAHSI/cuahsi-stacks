@@ -70,7 +70,7 @@ RUN mamba install -y \
   nbformat \
   jupyter_client \
   ipympl \
-  pyopenssl=23.0.0 \
+  pyopenssl \
   && mamba clean --all -f -y
 
 # set env vars
