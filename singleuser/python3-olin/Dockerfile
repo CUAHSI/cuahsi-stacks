@@ -34,7 +34,7 @@ RUN git clone --branch $TAG https://github.com/dtarb/TauDEM.git /tmp/TauDEM \
 && rm -rf /tmp/*
 
 # install nbfetch
-RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@v0.6.3 \
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@0ac64c8b06ec4fd83dcc0bf958604d888df01d86 \
 && jupyter serverextension enable --py nbfetch --sys-prefix
 
 USER jovyan
