@@ -4,6 +4,7 @@ FROM cuahsi/singleuser-base:$BASE_VERSION
 USER $NB_UID
 
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+ENV CONDA_PKG_DIRS=$HOME/.conda/pkgs
 
 WORKDIR /opt
 RUN > /opt/conda/conda-meta/pinned # clear conda pins
