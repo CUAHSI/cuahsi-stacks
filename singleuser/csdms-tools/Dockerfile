@@ -8,7 +8,7 @@ ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 # downgrade pyopenssl to 23.0.0
 RUN mamba install -y \
 --channel conda-forge \
-pyopenssl=23.0.0 \
+pyopenssl \
 && mamba clean --all -f -y
 
 # pymt
