@@ -36,7 +36,7 @@ RUN pip install hsclient[all]==1.1.6 \
 		pydantic==2.7.*
 
 RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
-    git+https://github.com/hydroshare/nbfetch.git@40ee7e9734017f2bea403f76c491f847da6cb7a6 \
+    git+https://github.com/hydroshare/nbfetch.git@5d8e40946239e051150f5d8331eaf8992bc3ff18 \
  && jupyter server extension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
