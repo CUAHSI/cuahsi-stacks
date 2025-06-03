@@ -5,7 +5,11 @@ USER $NB_UID
 
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 
-# downgrade pyopenssl to 23.0.0
+RUN > /opt/conda/conda-meta/pinned # clear conda pins
+COPY --chown=$NB_UID:$NB_UID environment.yaml /tmp/environment.yaml
+RUN mamba env update -n base --file /tmp/environment.yaml \
+    && mamba clean -afy
+
 RUN mamba install -y \
 --channel conda-forge \
 pyopenssl \
@@ -20,8 +24,8 @@ landlab==2.5.0 \
 child==21.03.12 \
 pymt_child==0.2.1 \
 hydrotrend==3.1.4 \
-pymt_hydrotrend \
-pymt_sedflux \
+pymt_hydrotrend==0.2.2 \
+pymt_sedflux==0.2.0 \
 sedflux==2.3.1 \
 pymt_ecsimplesnow==0.2.6 \
 pymt_gipl==0.1.1 \
