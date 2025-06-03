@@ -33,10 +33,6 @@ pymt_gipl==0.1.1 \
 pymt_rafem==0.1.4 \
 && mamba clean --all -f -y
 
-# upgrade pyopenssl to fix an issue that is preventing
-# nbfetch from loading correctly.
-RUN mamba upgrade pyopenssl -y
-
 
 # data component
 RUN mamba install -y \
