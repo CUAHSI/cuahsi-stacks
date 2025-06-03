@@ -34,7 +34,7 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch
-RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@3995c2b12afb2e45e6bef512260c5cbfcab49e8f \
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@40ee7e9734017f2bea403f76c491f847da6cb7a6 \
 && jupyter serverextension enable --py nbfetch --sys-prefix
 
 RUN conda install -y nb_conda_kernels \
