@@ -10,6 +10,7 @@ RUN > /opt/conda/conda-meta/pinned # clear conda pins
 COPY --chown=$NB_UID:$NB_UID environment.yaml /tmp/environment.yaml
 RUN mamba env update -n base --file /tmp/environment.yaml \
     && mamba clean -afy
+WORKDIR /
 
 RUN mamba install -y \
 --channel conda-forge \
