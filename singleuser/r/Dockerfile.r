@@ -16,7 +16,7 @@ RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUD
 USER $NB_UID
 
 RUN pip install git+https://github.com/huntdatacenter/jupyter-rsession-proxy.git@add-timeout
-RUN jupyter labextension install @jupyterlab/server-proxy --minimize=True
+RUN pip install jupyter-server-proxy
 
 
 RUN mamba install -y \
