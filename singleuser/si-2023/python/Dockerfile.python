@@ -55,7 +55,7 @@ RUN pip install --src=/opt/src/clawpack_src --user -e \
 
 # HydroShare packages
 # install nbfetch, hsclient
-RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@0ac64c8b06ec4fd83dcc0bf958604d888df01d86
+RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed git+https://github.com/hydroshare/nbfetch.git@3995c2b12afb2e45e6bef512260c5cbfcab49e8f
 #  && jupyter server extension enable --py nbfetch --sys-prefix
 
 
