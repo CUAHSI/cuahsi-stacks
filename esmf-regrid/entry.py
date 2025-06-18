@@ -9,14 +9,18 @@ Date: 07.08.2022
 Org: Consortium of Universities for the Advancement of Hydrologic Sciences, Inc
 """
 
+import os
 import sys
 import argparse
 import subprocess
-from typing import Dict, Union
+import xesmf as xe
+import xarray as xr
+from glob import glob
 from pathlib import Path
+from typing import Dict, Union
 
 
-class Regrid():
+class RegridGRIB:
     def __init__(self, parser):
         self.parser = parser
 
@@ -50,8 +54,8 @@ class Regrid():
                 {
                     "Geogrid": f"{geogrid_path}",
                     "Forcing Path": f"{forcing_path}",
-                    "Interp": f"{interp}"
-                 },
+                    "Interp": f"{interp}",
+                },
             )
 
         # generate weights
@@ -62,6 +66,91 @@ class Regrid():
 
         if p.returncode != 0:
             return False
+
+        return True
+
+    def fmt_message(self, msg: str, args: Dict[str, str]) -> None:
+        print(f'\n{"-"*25}\n{msg}\n')
+        for k, v in args.items():
+            print(f"{k:<15}:\t{v}")
+        print(f'{"-"*25}\n')
+
+
+class RegridNetCDF:
+    def __init__(self, geogrid_path, method, forcing_path, interp, verbose=False):
+        self.geogrid = Path(geogrid_path)
+        self.method = method
+        self.forcing = Path(forcing_path)
+        self.interp = interp
+        self.output = Path("output_files")
+        self.verbose = verbose
+        self.regridder = None
+
+    def execute(self) -> bool:
+
+        for infile in sorted(self.forcing.glob("*.nc")):
+
+            ds = xr.open_dataset(infile)
+            regridded_vars = {}
+
+            for var in ds.data_vars:
+                da = ds[var]
+
+                # Skip variables that can't be regridded
+                if set(da.dims[-2:]) not in [set(["lat", "lon"]), set(["y", "x"])]:
+                    print(f"Skipping non-gridded variable: {var}")
+                    continue
+
+                try:
+                    regridded_vars[var] = self.regridder(da)
+                except Exception as e:
+                    print(f"Could not regrid variable '{var}': {e}")
+
+            # Save regridded variables to new NetCDF
+            if regridded_vars:
+                out_ds = xr.Dataset(regridded_vars)
+                outfile = os.path.join(self.output, os.path.basename(infile))
+                out_ds.to_netcdf(outfile)
+                print(f"Saved regridded file: {outfile}")
+            else:
+                print(f"No variables regridded for {infile}")
+
+        return True
+
+    def prepare(self) -> bool:
+
+        if self.verbose:
+            self.fmt_message(
+                "Preparing Regridding",
+                {
+                    "Geogrid": f"{self.geogrid}",
+                    "Forcing Path": f"{self.forcing}",
+                    "Interp": f"{self.interp}",
+                },
+            )
+
+        # generate weights
+        geo = xr.open_dataset(self.geogrid)
+        lats = geo["XLAT_M"].squeeze()
+        lons = geo["XLONG_M"].squeeze()
+
+        target_grid = xr.Dataset(
+            {
+                "lat": (["y", "x"], lats.data),
+                "lon": (["y", "x"], lons.data),
+            }
+        )
+
+        # --- Use one input file to define source grid for weight generation ---
+        sample_src = xr.open_dataset(sorted(self.forcing.glob("*.nc"))[0])
+
+        self.regridder = xe.Regridder(
+            sample_src,
+            target_grid,
+            method=self.interp,
+            filename="generated_weights.nc",
+            reuse_weights=False,
+        )
 
         return True
 
@@ -109,6 +198,14 @@ if __name__ == "__main__":
         help="interpolation method to use",
     )
     parser.add_argument(
+        "-F",
+        "--forcing-format",
+        choices=["NETCDF", "GRIB"],
+        default="grib",
+        help="the format of the input forcing data",
+    )
+
+    parser.add_argument(
         "-v",
         "--verbose",
         help="enable verbose mode",
@@ -117,19 +214,38 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    regrid = Regrid(parser)
+    if args.forcing_format.upper() == "GRIB":
 
-    # prepare
-    success = regrid.prepare(
-        args.geogrid_path, args.method, args.forcing_path, args.interp, args.verbose
-    )
-    if not success:
-        print("Error encountered while generating weights")
-        sys.exit(1)
+        regrid = RegridGRIB(parser)
 
-    # execute
-    success = regrid.execute(args.geogrid_path, args.method)
-    if not success:
-        print(f"Error encountered while regridding: {args.method}")
-        sys.exit(1)
+        # prepare
+        success = regrid.prepare(
+            args.geogrid_path, args.method, args.forcing_path, args.interp, args.verbose
+        )
+        if not success:
+            print("Error encountered while generating weights")
+            sys.exit(1)
 
+        # execute
+        success = regrid.execute(args.geogrid_path, args.method)
+        if not success:
+            print(f"Error encountered while regridding: {args.method}")
+            sys.exit(1)
+    else:
+        # regrid NetCDF
+
+        regrid = RegridNetCDF(
+            args.geogrid_path, args.method, args.forcing_path, args.interp, args.verbose
+        )
+
+        # prepare
+        success = regrid.prepare()
+        if not success:
+            print("Error encountered while generating weights")
+            sys.exit(1)
+
+        # execute
+        success = regrid.execute()
+        if not success:
+            print(f"Error encountered while regridding: {args.method}")
+            sys.exit(1)
