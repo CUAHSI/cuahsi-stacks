@@ -154,6 +154,21 @@ class RegridNetCDF:
 
         return True
 
+    def post_process(self) -> bool:
+
+        try:
+            # rename output files to match the format expected by WRF-Hydro
+            for file in self.output.glob("*.nc"):
+                parts = file.name.split(".")
+                new_name = f"{parts[1][1:]}{parts[2][:2]}.LDASIN_DOMAIN1"
+                file.rename(self.output / new_name)
+                print(f"Renamed {file.name} to {new_name}")
+        except Exception:
+            print("Error renaming output files")
+            return False
+
+        return True
+
     def fmt_message(self, msg: str, args: Dict[str, str]) -> None:
         print(f'\n{"-"*25}\n{msg}\n')
         for k, v in args.items():
@@ -248,4 +263,9 @@ if __name__ == "__main__":
         success = regrid.execute()
         if not success:
             print(f"Error encountered while regridding: {args.method}")
+            sys.exit(1)
+
+        # rename outputs files
+        success = regrid.post_process()
+        if not success:
             sys.exit(1)

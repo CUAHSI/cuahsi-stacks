@@ -160,7 +160,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-i",
         "--image-version",
-        default="0.2",
+        default="0.3",
         help="Version of the cuahsi/wrf-hydro-regrid image to use, default=0.2",
     )
     parser.add_argument(
