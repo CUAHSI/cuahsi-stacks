@@ -4,11 +4,18 @@ FROM cuahsi/singleuser-base:$BASE_VERSION
 USER $NB_UID
 
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+ENV CONDA_PKG_DIRS=$HOME/.conda/pkgs
 
-# downgrade pyopenssl to 23.0.0
+WORKDIR /opt
+RUN > /opt/conda/conda-meta/pinned # clear conda pins
+COPY --chown=$NB_UID:$NB_UID environment.yaml /tmp/environment.yaml
+RUN mamba env update -n base --file /tmp/environment.yaml \
+    && mamba clean -afy
+WORKDIR /
+
 RUN mamba install -y \
 --channel conda-forge \
-pyopenssl=23.0.0 \
+pyopenssl \
 && mamba clean --all -f -y
 
 # pymt
@@ -27,10 +34,6 @@ pymt_ecsimplesnow==0.2.6 \
 pymt_gipl==0.1.1 \
 pymt_rafem==0.1.4 \
 && mamba clean --all -f -y
-
-# upgrade pyopenssl to fix an issue that is preventing
-# nbfetch from loading correctly.
-RUN mamba upgrade pyopenssl -y
 
 
 # data component
