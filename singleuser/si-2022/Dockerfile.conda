@@ -80,12 +80,10 @@ RUN pip install \
 	sphinx-rtd-theme \
 	nbsphinx \
 	nbsphinx-link \
-	hs_restclient \
-	hstools \
 	hsclient \
 	nbserverproxy \
 	nbresuse \
-	hydroshare_on_jupyter \
+	# hydroshare_on_jupyter \
 	ulmo \
 	pynhd \
 	dataretrieval \

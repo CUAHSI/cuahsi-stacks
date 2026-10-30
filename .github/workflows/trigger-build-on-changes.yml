@@ -31,7 +31,6 @@ jobs:
           scientific-py3: ${{ env.IMAGE_ROOT }}/python3-scientific/**
           scientific-r: ${{ env.IMAGE_ROOT }}/r/**
           hl-physical-hydrology: ${{ env.IMAGE_ROOT }}/hydrolearn-physical-hydrology/**
-          summa-py3: ${{ env.IMAGE_ROOT }}/python3-summa/**
           wrfhydro: ${{ env.IMAGE_ROOT }}/python3-wrfhydro/**
           csdms-tools: ${{ env.IMAGE_ROOT }}/csdms-tools/**
   setup-build-publish-deploy:
@@ -59,6 +58,7 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |
+          echo "BUILD COMMAND -> docker compose build ${{ matrix.IMAGE_VARIANT }}"
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
 
@@ -72,14 +72,14 @@ jobs:
           echo "GITHUB_SHA: $GITHUB_SHA"
           echo "BRANCH_NAME: $BRANCH_NAME"
           echo ------------
+
           export DOCKER_TAG="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:${{ env.CUAHSI_BASE }}"
-          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}:$BRANCH_NAME-latest"
+          export DOCKER_FULL_PATH="${REPOSITORY}/${IMAGE_ROOT}-${{ matrix.IMAGE_VARIANT }}:$BRANCH_NAME-latest"
+          echo "Old Image Name/Tag = $DOCKER_TAG"
+          echo "New Image Name/Tag = $DOCKER_FULL_PATH"
           echo "DOCKER_FULL_PATH=$DOCKER_FULL_PATH" >> $GITHUB_ENV
-          echo $DOCKER_FULL_PATH
           docker tag $DOCKER_TAG $DOCKER_FULL_PATH
 
       - name: Push Docker Image
         run: |
           docker push ${{ env.DOCKER_FULL_PATH }}
-
-    # TODO: run tests?

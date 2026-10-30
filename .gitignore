@@ -105,3 +105,7 @@ venv.bak/
 
 # mac
 .DS_Store
+
+*.pyi
+esmf-regrid/*.tar_.gz
+esmf-regrid/*.zip

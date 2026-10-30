@@ -1,4 +1,3 @@
-version: '3.8'
 services:
 
   ########
@@ -136,7 +135,7 @@ services:
   ####################
   # WRF-Hydro v5.0.3 #
   ####################
-  wrfhydro-5.0.3:
+  wrfhydro-py3:
     env_file:
       - '.env'
     build:
@@ -270,19 +269,32 @@ services:
         BASE_VERSION: ${CUAHSI_BASE}
     image: ${REPOSITORY}/singleuser-edu:${CUAHSI_BASE}
 
-  ########
-  # Test #
-  ########
+  ####################################
+  #  HydroLearn - Physical Hydrology #
+  ####################################
+  hl-physical-hydrology:
+    env_file:
+      - '.env'
+    build:
+      context: ./hydrolearn-physical-hydrology
+      dockerfile: Dockerfile
+      args:
+        # image version to use as base
+        BASE_VERSION: ${CUAHSI_BASE}
+    image: cuahsi/singleuser-hl-physical-hydrology:${BUILD_DATE}
+  
+  ############################
+  #  TEST Image For Building #
+  ############################
   test:
     env_file:
       - '.env'
-    build: 
+    build:
       context: ./test
       dockerfile: Dockerfile.test
       args:
-        # JupyterHub/singleuser version to use as base
-        BASE_VERSION: ${JH_BASE}
+        BASE_VERSION: ${CUAHSI_BASE}
       labels:
         description: |
-          Test JupyterHub image. Built using jupyterhub/singleuser:${JH_BASE} on ${BUILD_DATE}.
+          Test Imgage. Built using cuahsi/singleuser-base:$BASE_VERSION on ${BUILD_DATE}.
     image: ${REPOSITORY}/singleuser-test:${CUAHSI_BASE}

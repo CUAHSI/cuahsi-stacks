@@ -1,7 +1,6 @@
 FROM jupyter/scipy-notebook
 
 # SciUnit dependencies: backports.tempfile backports.weakref configobj contextlib2 humanfriendly monotonic poster tqdm tzlocal
-# HS_RestClient dependencies: requests requests-toolbelt requests-oauthlib
 
 RUN conda update conda -y \
 && conda clean --all -y \
@@ -41,9 +40,8 @@ RUN conda update conda -y \
  tzlocal \
 && conda clean --all -y
 
-# install hs_restclient, sciunit, and pyemu (uncertainty analysis library)
-RUN /opt/conda/envs/python2/bin/pip install --no-cache-dir hs_restclient \
-&& /opt/conda/envs/python2/bin/pip install --no-cache-dir sciunit2 \
+# install sciunit, and pyemu (uncertainty analysis library)
+RUN /opt/conda/envs/python2/bin/pip install --no-cache-dir sciunit2 \
 && /bin/bash -c "source activate python2 && sciunit post-install" \
 && /opt/conda/envs/python2/bin/pip install --no-cache-dir pyemu
 

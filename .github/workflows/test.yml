@@ -39,6 +39,7 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |
+          echo "BUILD COMMAND -> docker compose build ${{ matrix.IMAGE_VARIANT }}"
           cd "${IMAGE_ROOT}"
           docker compose build ${{ matrix.IMAGE_VARIANT }}
 

@@ -10,6 +10,7 @@ Date: 07.18.2022
 Org: CUAHSI
 """
 
+import os
 import sys
 import tqdm
 import time
@@ -22,55 +23,78 @@ from datetime import datetime, timedelta
 
 
 def display_progress(container_id, lsm_nl_path, output_path):
-    client = docker.from_env()
-        
+    client = get_docker_client_with_fallback()
+
     # determine the start and end time of the simulation
     lsm_nml = f90nml.read(lsm_nl_path)
-    lsm = lsm_nml['noahlsm_offline']
-    start_dt = datetime(lsm['start_year'],
-                        lsm['start_month'],
-                        lsm['start_day'],
-                        lsm['start_hour'],
-                        lsm['start_min'])
+    lsm = lsm_nml["noahlsm_offline"]
+    start_dt = datetime(
+        lsm["start_year"],
+        lsm["start_month"],
+        lsm["start_day"],
+        lsm["start_hour"],
+        lsm["start_min"],
+    )
     curr_dt = start_dt
-    if 'kday' in lsm:
-        end_dt = start_dt + timedelta(days=lsm['kday'])
+    if "kday" in lsm:
+        end_dt = start_dt + timedelta(days=lsm["kday"])
     else:
-        end_dt = start_dt + timedelta(hours=lsm['khour'])
+        end_dt = start_dt + timedelta(hours=lsm["khour"])
     simulation_total_sec = (end_dt - start_dt).total_seconds()
 
     # initialize the progress bar
-    pbar = tqdm.tqdm(total=simulation_total_sec,
-                     bar_format=('{l_bar}{bar}|[{elapsed}'
-                                 '<{remaining}{postfix}'))
-    
+    pbar = tqdm.tqdm(
+        total=simulation_total_sec,
+        bar_format=("{l_bar}{bar}|[{elapsed}" "<{remaining}{postfix}"),
+    )
+
     old_dt = curr_dt
-    while len(client.containers.list(filters={'id': container_id})) > 0:
+    while len(client.containers.list(filters={"id": container_id})) > 0:
         # get the last LDAS file that was created
-        out_files = output_path.glob('*LDAS*')
+        out_files = output_path.glob("*LDAS*")
         latest = max(out_files, key=lambda x: x.stat().st_ctime).name
 
         # update the progress bar
         old_dt = curr_dt
-        curr_dt = datetime.strptime(latest.split('.')[0],
-                                             '%Y%m%d%H%M')
+        curr_dt = datetime.strptime(latest.split(".")[0], "%Y%m%d%H%M")
         diff = (curr_dt - old_dt).total_seconds()
         pbar.set_postfix(sim_time=curr_dt)
         pbar.update(diff)
         time.sleep(1)
-    
+
     # update to simulation end time
     curr_dt = end_dt
     diff = (curr_dt - old_dt).total_seconds()
     pbar.set_postfix(sim_time=curr_dt)
     pbar.update(diff)
-    
+
     pbar.close()
 
 
+def get_docker_client_with_fallback():
+
+    docker_host = os.environ.get("DOCKER_HOST")
+    if docker_host:
+        return docker.DockerClient(base_url=docker_host)
+
+    # Try macOS-specific path
+    # unix:///Users/castro/Library/Containers/com.docker.docker/Data/docker-cli.sock
+    sockets = [
+        "/var/run/docker.sock",
+        str(Path.home() / ".docker/run/docker.sock"),
+    ]
+    for sock in sockets:
+        if Path(sock).exists():
+            return docker.DockerClient(base_url=f"unix://{sock}")
+
+    print(
+        "Could not find Docker socket. Please ensure Docker is running and the DOCKER_HOST environment variable is set if using a non-standard socket."
+    )
+    sys.exit(1)
+
 
 def _check_image_exists(img: str) -> bool:
-    client = docker.from_env()
+    client = get_docker_client_with_fallback()
     installed_images = client.images.list()
     for installed_image in installed_images:
         if len(installed_image.tags) > 0:  # make sure that a tag exists
@@ -80,7 +104,7 @@ def _check_image_exists(img: str) -> bool:
 
 
 def _pull_image(img: str) -> bool:
-    client = docker.from_env()
+    client = get_docker_client_with_fallback()
     try:
         client.images.pull(img)
     except docker.errors.APIError as e:
@@ -111,27 +135,24 @@ def execute_simulation(
             "bind": "/home/docker/RUN/DOMAIN",
             "mode": "rw",
         },
-        f"{output_path.absolute()}/": {
-            "bind": "/home/docker/RUN/OUTPUT",
-            "mode": "rw"
-        },
+        f"{output_path.absolute()}/": {"bind": "/home/docker/RUN/OUTPUT", "mode": "rw"},
         f"{hydro_nl_path.absolute()}/": {
             "bind": "/home/docker/RUN/hydro.namelist",
-            "mode": "rw"
+            "mode": "rw",
         },
         f"{lsm_nl_path.absolute()}/": {
             "bind": "/home/docker/RUN/namelist.hrldas",
-            "mode": "rw"
+            "mode": "rw",
         },
     }
     if forcing_path is not None:
         forcing_path = Path(forcing_path)
         mnt[f"{forcing_path.absolute()}/"] = {
             "bind": "/home/docker/RUN/FORCING",
-            "mode": "rw"
+            "mode": "rw",
         }
 
-    client = docker.from_env()
+    client = get_docker_client_with_fallback()
     try:
         container = client.containers.run(
             image,
@@ -139,15 +160,12 @@ def execute_simulation(
             auto_remove=True,
             detach=True,
         )
-       
+
         # wait for container to start
         time.sleep(5)
 
         # print simulation progress to stdout
-        display_progress(container.id,
-                         lsm_nl_path,
-                         output_path)
-
+        display_progress(container.id, lsm_nl_path, output_path)
 
     except docker.errors.APIError as e:
         print(f"Error encountered while executing WRF-Hydro simulation: \n\t {e}")
@@ -166,7 +184,7 @@ if __name__ == "__main__":
         "-d",
         "--domain-path",
         required=True,
-        help="path to the simulation DOMAIN file directory", 
+        help="path to the simulation DOMAIN file directory",
     )
     parser.add_argument(
         "-o",
@@ -224,10 +242,12 @@ if __name__ == "__main__":
 
     # checking the user supplied paths for errors
     errors = []
-    for input_val in [args.domain_path,
-                      args.output_path,
-                      args.wrfhydro_namelist,
-                      args.lsm_namelist]:
+    for input_val in [
+        args.domain_path,
+        args.output_path,
+        args.wrfhydro_namelist,
+        args.lsm_namelist,
+    ]:
         input_path = Path(input_val)
         if not input_path.exists():
             errors.append(f"ERROR: Path does not exist {input_path.absolute()}")
@@ -237,6 +257,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # check if image exists on system
+    print("Checking for Docker image...")
     img_exists = _check_image_exists(image)
     print(f'Image "{image}" exists: {img_exists}')
 
