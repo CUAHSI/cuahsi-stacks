@@ -23,7 +23,12 @@ RUN conda create -n ngen -y \
   pyyaml \ 
   fiona
 
+RUN pip install ipykernel \
+ && python -m ipykernel install --user --name ngen --display-name "NOAA NGEN"
+
 RUN /srv/conda/bin/conda init 
+
+RUN mkdir /home/jovyan/data
 
 USER $NB_UID
 

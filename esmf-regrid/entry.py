@@ -84,12 +84,19 @@ class RegridNetCDF:
         self.interp = interp
         self.output = Path("output_files")
         self.verbose = verbose
+
+        # regridder is set in the prepare step using the
+        # input and target grids.
         self.regridder = None
 
     def execute(self) -> bool:
 
+        # loop through each NetCDF input file and perform
+        # the regridding operations.
         for infile in sorted(self.forcing.glob("*.nc")):
 
+            # load the file using xarray, then loop over
+            # each variable and regrid it if possible.
             ds = xr.open_dataset(infile)
             regridded_vars = {}
 
@@ -109,6 +116,35 @@ class RegridNetCDF:
             # Save regridded variables to new NetCDF
             if regridded_vars:
                 out_ds = xr.Dataset(regridded_vars)
+
+                # Rename variables to align with WRF-Hydro expectations
+                out_ds = out_ds.rename(
+                    {
+                        "time": "Time",
+                        "x": "west_east",
+                        "y": "south_north",
+                        "SWdown": "SWDOWN",
+                        "LWdown": "LWDOWN",
+                        "Qair": "Q2D",
+                        "Tair": "T2D",
+                        "PSurf": "PSFC",
+                        "Wind_E": "U2D",
+                        "Wind_N": "V2D",
+                        "Rainf": "RAINRATE",
+                    }
+                )
+
+                # convert precipitation rate from kg/m2 to kg/(m2 s) or (mm/s)
+                out_ds["RAINRATE"] = out_ds["RAINRATE"] / 3600.0
+
+                # drop variables not needed by WRF-Hydro
+                out_ds = out_ds.drop_vars(
+                    [
+                        "PotEvap",
+                    ]
+                )
+
+                # save to regridded variables to output directory
                 outfile = os.path.join(self.output, os.path.basename(infile))
                 out_ds.to_netcdf(outfile)
                 print(f"Saved regridded file: {outfile}")

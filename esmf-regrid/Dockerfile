@@ -14,11 +14,19 @@ RUN apt update \
 WORKDIR /home
 
 
-RUN wget \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+ARG TARGETARCH
+
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        ARCH=x86_64; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        ARCH=aarch64; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" ; exit 1 ; \
+    fi && \
+    wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-${ARCH}.sh" \
     && mkdir /root/.conda \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \
-    && rm -f Miniconda3-latest-Linux-x86_64.sh
+    && bash "Miniconda3-latest-Linux-${ARCH}.sh" -b \
+    && rm -f "Miniconda3-latest-Linux-${ARCH}.sh"
 
 
 ENV NCARG_ROOT="/root/miniconda3"
