@@ -1,6 +1,6 @@
 # Issue tracker: Jira (CAM)
 
-Tickets and specs live in Jira, project `CAM`, on `cuahsi.atlassian.net`. Use the Atlassian CLI (`acli`) for all operations. GitHub (`CUAHSI/cuahsi-model-images`) is used **only for source code and pull requests**; never create GitHub issues.
+Tickets and specs live in Jira, project `CAM`, on `cuahsi.atlassian.net`. Use the Atlassian CLI (`acli`) for all operations. GitHub (`CUAHSI/cuahsi-stacks`) is used **only for source code and pull requests**; never create GitHub issues.
 
 `CAM` is shared by every Compute and Modeling team project, and the tree for this work is Objective `CAM-1495` (Support for Cloud Computing Environments). Only touch work items under `CAM-1495`, plus new items you create under the rules below.
 
@@ -120,7 +120,7 @@ git checkout develop && git pull && git checkout -b CAM-1500-update-singleuser-b
 
 ## Pull requests (GitHub)
 
-PRs are opened on `CUAHSI/cuahsi-model-images` with `gh pr create --base develop`, from a branch named as in **Branches** above. Put the Jira key in the PR title (e.g. `CAM-1500: Update singleuser base image`) so the PR can be traced back to its Story. When a PR is opened for a Story, transition the Story to `In Review`. Release PRs (`develop` → `master`) are opened by humans.
+PRs are opened on `CUAHSI/cuahsi-stacks` with `gh pr create --base develop`, from a branch named as in **Branches** above. Put the Jira key in the PR title (e.g. `CAM-1500: Update singleuser base image`) so the PR can be traced back to its Story. When a PR is opened for a Story, transition the Story to `In Review`. Release PRs (`develop` → `master`) are opened by humans.
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_ When `yes`, triage external PRs with `gh pr view <n> --comments`, `gh pr diff <n>`, `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, and `gh pr close`.
 
