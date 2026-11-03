@@ -6,9 +6,10 @@ services:
   base:
     env_file:
       - '.env'
+    platform: linux/amd64
     build: 
       context: ./base
-      dockerfile: Dockerfile.base
+      dockerfile: Dockerfile
       args:
         # JupyterHub/singleuser version to use as base
         BASE_VERSION: ${JH_BASE}
@@ -23,6 +24,7 @@ services:
   base-py3.7:
     env_file:
       - '.env'
+    platform: linux/amd64
     build: 
       context: ./base
       dockerfile: Dockerfile.base.py37
@@ -40,6 +42,7 @@ services:
   base-centos7:
     env_file:
       - '.env'
+    platform: linux/amd64
     build: 
       context: ./base-centos7
       dockerfile: Dockerfile
@@ -54,6 +57,7 @@ services:
   scientific-py3:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-scientific
       dockerfile: Dockerfile
@@ -71,6 +75,7 @@ services:
   scientific-r:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./r
       dockerfile: Dockerfile.r
@@ -88,6 +93,7 @@ services:
   hydrogeology-r:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./hydrogeology
       dockerfile: Dockerfile
@@ -104,6 +110,7 @@ services:
   waterhackweek:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./waterhackweek
       dockerfile: Dockerfile
@@ -120,6 +127,7 @@ services:
   geophysics:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-wine
       dockerfile: Dockerfile.wine
@@ -138,6 +146,7 @@ services:
   wrfhydro-py3:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-wrfhydro
       dockerfile: Dockerfile.wrfhydro
@@ -155,6 +164,7 @@ services:
   parflow:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-parflow
       dockerfile: Dockerfile
@@ -172,6 +182,7 @@ services:
   summa-py3:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-summa
       dockerfile: Dockerfile
@@ -189,6 +200,7 @@ services:
   csdms-tools:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./csdms-tools
       dockerfile: Dockerfile
@@ -206,6 +218,7 @@ services:
   wrfhydro:
     env_file:
       - '.env'
+    platform: linux/amd64
     environment:
       - VERSION='nwm-v2.0'
     build:
@@ -227,6 +240,7 @@ services:
   si2021:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./si-2021
       dockerfile: Dockerfile
@@ -244,6 +258,7 @@ services:
   modflow:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./python3-iah_class
       dockerfile: Dockerfile
@@ -261,6 +276,7 @@ services:
   edu:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./gerbrand
       dockerfile: Dockerfile
@@ -275,6 +291,7 @@ services:
   hl-physical-hydrology:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./hydrolearn-physical-hydrology
       dockerfile: Dockerfile
@@ -289,6 +306,7 @@ services:
   test:
     env_file:
       - '.env'
+    platform: linux/amd64
     build:
       context: ./test
       dockerfile: Dockerfile.test
@@ -296,5 +314,5 @@ services:
         BASE_VERSION: ${CUAHSI_BASE}
       labels:
         description: |
-          Test Imgage. Built using cuahsi/singleuser-base:$BASE_VERSION on ${BUILD_DATE}.
+          Test Imgage. Built using cuahsi/singleuser-base:${CUAHSI_BASE} on ${BUILD_DATE}.
     image: ${REPOSITORY}/singleuser-test:${CUAHSI_BASE}

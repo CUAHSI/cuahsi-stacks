@@ -5,7 +5,7 @@ if [ $# -ne 4 ]; then
     echo "Usage:"
     echo "build_image [path to Dockerfile] [base image name] [tag] [version]"
     echo "e.g."
-    echo "build_image base/Dockerfile.base latest base 2020.06.08"
+    echo "build_image base/Dockerfile latest base 2020.06.08"
     echo "-> cuahsi/singleuser-base:2020.06.08"
     exit 1
 fi

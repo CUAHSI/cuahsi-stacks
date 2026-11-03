@@ -9,5 +9,5 @@ fi
 
 TAG=$1
 
-docker build -f Dockerfile.base -t cuahsi/singleuser:base-$TAG .
+docker build -f Dockerfile -t cuahsi/singleuser:base-$TAG .
 
