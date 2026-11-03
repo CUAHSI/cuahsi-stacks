@@ -32,21 +32,23 @@ RUN conda config --append envs_dirs /home/jovyan/data/conda-envs
 
 # HydroShare packages
 # install nbfetch, hsclient
-RUN pip install hsclient[all]==1.1.6 \
-		pydantic==2.7.*
+RUN pip install hsclient[all]==1.1.9
+#\
+#		pydantic==2.7.*
 
 RUN pip install -U --no-cache-dir --upgrade-strategy only-if-needed \
-    git+https://github.com/hydroshare/nbfetch.git@0.6.4 \
+    git+https://github.com/hydroshare/nbfetch.git \
  && jupyter server extension enable --py nbfetch --sys-prefix
+#git+https://github.com/hydroshare/nbfetch.git@0.6.4 \
 
 RUN conda install -y nb_conda_kernels \
   && conda clean --all -f -y
 
 # install system monitor
+# jupyterlab-system-monitor and jupyterlab-topbar are JupyterLab 3 only; their
+# topbar CPU/memory indicators are built into jupyter-resource-usage >= 1.0.
 RUN pip install \
-    jupyterlab-system-monitor \
-    jupyter-resource-usage \
-    jupyterlab-topbar \
+    "jupyter-resource-usage>=1.0" \
     dask-labextension \
     jupyter-server-proxy
 
